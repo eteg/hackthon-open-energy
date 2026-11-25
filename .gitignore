@@ -43,3 +43,6 @@ next-env.d.ts
 # logs de execução (copie amostras para evidencias/ antes de commitar)
 logs/*.jsonl
 !.env.example
+
+# Workflows do n8n com segredos fixos (nunca versionar)
+docs/n8n/*.local.json

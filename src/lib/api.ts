@@ -39,6 +39,8 @@ export type ExtracaoArquivo = {
   confianca: number;
   alerta_injecao: boolean;
   padroes_injecao: string[];
+  /** Presente só quando a leitura é MOCKADA (n8n falhou ou não configurado): não é a fatura enviada. */
+  fallback?: { ativo: true; motivo: string };
 };
 export type RegrasPublicas = {
   versao: string;
@@ -67,7 +69,14 @@ export const api = {
     form.append("arquivo", arquivo);
     return http
       .post<ExtracaoArquivo>("/faturas/extrair", form, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60_000 })
-      .then((r) => r.data);
+      .then((r) => {
+        if (r.data.fallback?.ativo) {
+          console.log(`[leitura da fatura] FALLBACK: o n8n falhou, exibindo dado MOCKADO (não é a sua fatura). Motivo: ${r.data.fallback.motivo}`, r.data);
+        } else {
+          console.log("[leitura da fatura] dados vindos do n8n:", r.data);
+        }
+        return r.data;
+      });
   },
   confirmarFatura: (fatura: FaturaParcial) => http.post<Fatura>("/faturas/confirmar", { fatura }).then((r) => r.data),
   simular: (faturaId: string) => http.post<Simulacao>("/simulacao", { faturaId }).then((r) => r.data),

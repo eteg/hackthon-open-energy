@@ -106,6 +106,22 @@ function Formulario({ leitura }: { leitura: ExtracaoArquivo }) {
     >
       <h1 className="text-[26px] leading-[1.12] font-medium">Confira o que li</h1>
 
+      {leitura.fallback?.ativo ? (
+        // FALLBACK: o n8n falhou e estes dados são de EXEMPLO, não da fatura enviada. Fica sempre visível.
+        <Alert variant="warning" data-testid="leitura-mockada">
+          <TriangleAlert />
+          <AlertTitle>Leitura de demonstração</AlertTitle>
+          <AlertDescription>
+            <p>Não consegui falar com o serviço de leitura, então estes dados são de exemplo e <b>não são da sua fatura</b>. Corrija cada campo antes de continuar.</p>
+            <p className="text-xs">Motivo: {leitura.fallback.motivo}</p>
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <p className="text-xs text-muted-foreground" data-testid="leitura-do-n8n">
+          Lida da sua fatura pelo serviço de leitura · confiança {Math.round(leitura.confianca * 100)}%
+        </p>
+      )}
+
       {leitura.alerta_injecao && (
         <Alert variant="destructive">
           <ShieldAlert />

@@ -6,10 +6,13 @@ import { dadosSupabaseConfigurados, loginSupabaseConfigurado } from "@/lib/supab
 import { usuarioDaRequisicao, type UsuarioRequisicao } from "@/lib/supabase/servidor";
 
 /**
- * Único endpoint do app: repassa as chamadas do front ao serviço n8n (N8N_BASE_URL).
- * O contrato é o de `src/lib/api.ts` (veja docs/n8n-contrato.md). A URL e o token ficam só no servidor.
- * Sem N8N_BASE_URL, responde em modo demonstração (respostas fixas de `src/lib/demo-api`), com o estado
- * guardado no Supabase quando ele está configurado (senão, em memória).
+ * Único endpoint do app. O contrato é o de `src/lib/api.ts` (veja docs/n8n-contrato.md); a URL e o token do n8n
+ * ficam só no servidor.
+ * - Rotas que o n8n já atende (`NO_N8N`: hoje, a leitura da fatura por arquivo) vão para ele quando N8N_BASE_URL
+ *   está definido.
+ * - O resto responde em modo demonstração (respostas fixas de `src/lib/demo-api`), com o estado guardado no
+ *   Supabase quando ele está configurado (senão, em memória). É assim mesmo com N8N_BASE_URL definido, enquanto
+ *   o n8n não tiver essas rotas: repassá-las daria 404.
  * Só os caminhos da lista abaixo são repassados: o proxy não vira um redirecionador aberto para o n8n.
  * Com o login do Supabase configurado, as rotas do console exigem sessão de fornecedor (perfil varejista).
  */
@@ -29,7 +32,25 @@ const DO_FORNECEDOR: [metodo: string, caminho: RegExp][] = [
   ["GET", /^casos$/],
   ["POST", /^casos\/[\w-]+\/aprovar$/],
 ];
+/** Rotas já implementadas no n8n. Acrescente aqui quando o n8n ganhar outra. */
+const NO_N8N = (metodo: string, caminho: string, multipart: boolean) => metodo === "POST" && caminho === "faturas/extrair" && multipart; // o modo JSON { faturaId } (fatura de exemplo) segue na demonstração
 const TIMEOUT_MS = 60_000; // leitura de fatura por IA pode demorar
+
+/**
+ * Erros causados por quem enviou o arquivo: passam como vieram. Mostrar a leitura mockada nesses casos esconderia
+ * o problema real (ex.: PDF com senha, arquivo grande demais, formato inválido).
+ */
+const ERRO_DO_ENVIO = [400, 413, 415, 422];
+
+/**
+ * FALLBACK da leitura da fatura: o n8n falhou, então devolve a leitura MOCKADA (marcada com `fallback` e o motivo)
+ * e registra no log do servidor. O front também registra no console do navegador e avisa na tela.
+ */
+async function leituraMockada(motivo: string): Promise<Response> {
+  console.log(`[FALLBACK leitura da fatura] n8n falhou (${motivo}). Devolvendo a leitura MOCKADA (Padaria Pão Dourado, R$ 2.400): não é a fatura enviada.`);
+  const r = await demoResponder({ metodo: "POST", caminho: "faturas/extrair", arquivo: true, motivoFallback: motivo });
+  return Response.json(r.body, { status: r.status });
+}
 
 const casa = (lista: [string, RegExp][], metodo: string, caminho: string) => lista.some(([m, re]) => m === metodo && re.test(caminho));
 
@@ -50,8 +71,8 @@ async function tratar(req: Request, ctx: RouteContext<"/api/[...caminho]">) {
   }
 
   const base = process.env.N8N_BASE_URL?.replace(/\/+$/, "");
-  if (!base) {
-    const multipart = req.headers.get("content-type")?.includes("multipart/form-data") ?? false;
+  const multipart = req.headers.get("content-type")?.includes("multipart/form-data") ?? false;
+  if (!base || !NO_N8N(req.method, caminho, multipart)) {
     const json = multipart || req.method === "GET" ? undefined : await req.json().catch(() => undefined);
     try {
       const repo = dadosSupabaseConfigurados() ? repositorioSupabase() : repositorioMemoria();
@@ -71,6 +92,7 @@ async function tratar(req: Request, ctx: RouteContext<"/api/[...caminho]">) {
   headers.set("accept", "application/json");
   if (process.env.N8N_TOKEN) headers.set("authorization", `Bearer ${process.env.N8N_TOKEN}`);
 
+  // Leitura da fatura no n8n (a única rota em NO_N8N). Qualquer falha dele cai no fallback mockado, com log.
   try {
     const res = await fetch(destino, {
       method: req.method,
@@ -82,15 +104,26 @@ async function tratar(req: Request, ctx: RouteContext<"/api/[...caminho]">) {
       cache: "no-store",
     });
     const texto = await res.text();
+    let json: unknown;
     try {
-      return Response.json(JSON.parse(texto), { status: res.status });
+      json = JSON.parse(texto);
     } catch {
-      // Resposta que não é JSON (erro cru do n8n, página de proxy): o front sempre recebe { erro }.
-      return Response.json({ erro: res.ok ? "Resposta inesperada do serviço" : "O serviço está indisponível agora. Tente de novo." }, { status: res.ok ? 502 : res.status });
+      // Ex.: página HTML do servidor na frente do n8n, que troca o corpo de um 502.
+      if (ERRO_DO_ENVIO.includes(res.status)) return Response.json({ erro: "Não consegui ler a fatura agora. Tente de novo." }, { status: res.status });
+      return leituraMockada(`n8n respondeu HTTP ${res.status} com corpo que não é JSON`);
     }
+    if (res.ok) {
+      const leitura = json as { fatura?: unknown; ausentes?: unknown };
+      if (leitura && typeof leitura.fatura === "object" && Array.isArray(leitura.ausentes)) {
+        console.log(`[leitura da fatura] dados vindos do n8n (HTTP ${res.status}).`);
+        return Response.json(json, { status: res.status });
+      }
+      return leituraMockada("resposta do n8n fora do formato do contrato (sem `fatura` e `ausentes`)");
+    }
+    if (ERRO_DO_ENVIO.includes(res.status)) return Response.json(json, { status: res.status });
+    return leituraMockada(`n8n respondeu HTTP ${res.status}`);
   } catch (e) {
-    console.error("[proxy n8n] falha ao chamar o serviço:", e instanceof Error ? e.message : e);
-    return Response.json({ erro: "Não consegui falar com o serviço agora. Tente de novo." }, { status: 502 });
+    return leituraMockada(`sem resposta do n8n: ${e instanceof Error ? e.message : String(e)}`);
   }
 }
 

@@ -15,7 +15,8 @@ import { repositorioMemoria, type Repositorio } from "./repositorio";
 
 export type RespostaDemo = { status: number; body: unknown };
 /** `usuarioId`: quem está logado (Supabase), para ligar faturas, casos e evidências à conta. */
-export type PedidoDemo = { metodo: string; caminho: string; json?: unknown; arquivo?: boolean; usuarioId?: string | null };
+/** `motivoFallback`: por que a leitura por arquivo é mockada (n8n falhou ou não está configurado); vai na resposta para a tela avisar. */
+export type PedidoDemo = { metodo: string; caminho: string; json?: unknown; arquivo?: boolean; usuarioId?: string | null; motivoFallback?: string };
 
 /** O `acompanhamento_id` é o segredo do link do consumidor: só quem CRIA o caso o recebe. Listas e telas do console nunca o expõem. */
 const semSegredo = (c: Caso): Caso => {
@@ -42,7 +43,7 @@ async function simulacaoDe(repo: Repositorio, faturaId: string): Promise<Simulac
 }
 
 export async function demoResponder(
-  { metodo, caminho, json, arquivo, usuarioId = null }: PedidoDemo,
+  { metodo, caminho, json, arquivo, usuarioId = null, motivoFallback }: PedidoDemo,
   repo: Repositorio = repositorioMemoria()
 ): Promise<RespostaDemo> {
   const rota = `${metodo} ${caminho}`;
@@ -55,7 +56,9 @@ export async function demoResponder(
       // Leitura fixa: a fatura de exemplo, sem segmento nem histórico (o consumidor completa na conferência).
       const lida: Partial<Fatura> = { ...extracoes["fat-001"].fatura };
       for (const k of ["id", "segmento", "historico_12m_kwh", "observacoes"] as const) delete lida[k];
-      return ok({ origem: "arquivo", fatura: lida, ausentes: ["segmento", "historico_12m_kwh"], confianca: 0.9, alerta_injecao: false, padroes_injecao: [] });
+      return ok({ origem: "arquivo", fatura: lida, ausentes: ["segmento", "historico_12m_kwh"], confianca: 0.9, alerta_injecao: false, padroes_injecao: [],
+        // MOCKADO: dado de exemplo, não é a fatura enviada. A tela avisa o consumidor com base neste campo.
+        fallback: { ativo: true, motivo: motivoFallback ?? "N8N_BASE_URL não configurado (modo demonstração)" } });
     }
     const id = z.object({ faturaId: z.string() }).safeParse(corpo);
     if (!id.success) return erro("faturaId obrigatório", 400);
