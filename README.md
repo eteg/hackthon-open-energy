@@ -20,6 +20,7 @@ Para novos componentes shadcn: `npx shadcn@latest add dialog` (o `components.jso
 
 | Rota | O que mostra |
 |---|---|
+| `/` | Escolha do perfil (MVP): **Varejista** leva ao cadastro da empresa e **Consumidor final** ao onboarding |
 | `/onboarding` | Fatura → dados extraídos → simulação honesta com recibo → ciência de riscos → pedido de migração |
 | `/atendimento` | Agente com RAG + fonte, escalonamento para humano e bloqueio de prompt injection |
 | `/painel` | Casos por etapa, risco de desistência, **aprovação humana** da migração, observabilidade da IA |
