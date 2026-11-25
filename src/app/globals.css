@@ -62,8 +62,8 @@
   --linha: #dcd5c8;
   --confirmado: #1d6b34;
   --confirmado-tinta: #d6efd9;
-  --atencao: #8a5a00;
-  --atencao-tinta: #f5e8cc;
+  --atencao: #8a3b1c; /* avisos no tom de destaque da LP, que não usa amarelo */
+  --atencao-tinta: #f3e1d6;
   --erro: #b42318;
   --campo: #cfc7b8; /* borda de campos */
   --secundario: #efe9de; /* superfície secundária sobre o papel */
