@@ -26,7 +26,7 @@ function Oferta({ o, posicao, destaque, onEscolher }: { o: ResultadoOferta; posi
   const anual = formatarBRL(l.base * 12);
   const pcts = `${formatarPct(o.economia_pct_conta_base)} da conta · ${formatarPct(o.desconto_efetivo_energia_pct)} na energia`;
   return (
-    <div className={cn("rounded-xl border bg-card px-3.5 py-3", destaque && "border-2 border-primary p-3.5")}>
+    <div className={cn("rounded-xl border bg-card px-3.5 py-3", destaque && "border-2 border-grafite p-3.5")}>
       <div className="flex items-center justify-between gap-2">
         <h2 className={cn(destaque ? "font-display text-lg font-medium" : "text-sm font-bold")}>
           #{posicao} {o.varejista}

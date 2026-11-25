@@ -83,7 +83,7 @@ export function ContaDecomposta() {
       </div>
 
       {melhor && (
-        <div className="rounded-xl border-2 border-primary bg-card p-4">
+        <div className="rounded-xl border-2 border-grafite bg-card p-4">
           <div className="font-display text-[28px] leading-[1.1] font-medium">
             {formatarPct(melhor.desconto_efetivo_energia_pct)} na energia ≈ {formatarPct(melhor.economia_pct_conta_base)} na conta
           </div>
@@ -97,7 +97,7 @@ export function ContaDecomposta() {
       <AlertasSimulacao sim={sim} />
 
       {sim.elegibilidade.grupo_b && (
-        <div className="rounded-xl border-2 border-primary bg-card px-3.5 py-3 text-sm leading-snug">
+        <div className="rounded-xl border-2 border-grafite bg-card px-3.5 py-3 text-sm leading-snug">
           <b>Pode migrar a partir de {formatarData(sim.elegibilidade.data_abertura)}.</b>
           <span className="block text-xs text-muted-foreground">Prazo para formalizar e migrar na abertura: {formatarData(sim.elegibilidade.prazo_formalizacao)}.</span>
         </div>

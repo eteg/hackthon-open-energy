@@ -116,7 +116,7 @@ export function Acompanhamento({ id }: { id: string }) {
       </div>
 
       {caso.etapa === "documentacao" && (
-        <div className="rounded-xl border-2 border-primary bg-card p-3.5">
+        <div className="rounded-xl border-2 border-grafite bg-card p-3.5">
           <div className="font-display text-[17px] font-bold">O que fazer agora</div>
           <p className="mt-1 text-sm leading-normal">
             Procure o e-mail da CCEE{email ? <> enviado para <b>{email}</b></> : null} e assine o CCV por lá. Veja também o spam.

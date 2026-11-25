@@ -4,23 +4,23 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-sans transition-colors disabled:pointer-events-none disabled:bg-[#e7e0d1] disabled:text-[#5a6068] disabled:border-transparent [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none aria-invalid:ring-destructive/20 aria-invalid:border-destructive cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-sans transition-colors disabled:pointer-events-none disabled:bg-[#e7e0d1] disabled:text-[#5a6068] disabled:border-transparent [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none aria-invalid:ring-destructive/20 aria-invalid:border-destructive cursor-pointer",
   {
     variants: {
       variant: {
-        // Um botão primário (cobre) por tela.
-        default: "bg-primary text-primary-foreground hover:bg-cobre-escuro",
+        // Um botão primário por tela, como o "Simular agora" da LP: cobre-claro com texto e borda grafite.
+        default: "border-2 border-grafite bg-cobre-claro text-grafite hover:bg-cobre-claro-hover",
         destructive: "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20",
-        outline: "border border-input bg-card text-foreground hover:bg-secondary",
+        outline: "border-2 border-grafite bg-card text-grafite hover:bg-secondary",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/70",
         ghost: "text-foreground hover:bg-secondary",
         link: "min-h-0 px-0 text-primary underline underline-offset-4 hover:text-cobre-escuro",
       },
       size: {
         // alvos de toque >= 44px (guia: mobile first)
-        default: "min-h-11 px-4 text-sm font-semibold has-[>svg]:px-3.5",
-        sm: "min-h-9 gap-1.5 px-3 text-sm font-semibold has-[>svg]:px-2.5",
-        lg: "min-h-13 w-full px-5 text-base font-semibold",
+        default: "min-h-11 px-5 text-sm font-bold has-[>svg]:px-4",
+        sm: "min-h-9 gap-1.5 px-3.5 text-sm font-bold has-[>svg]:px-3",
+        lg: "min-h-13 w-full px-6 text-base font-bold",
         icon: "size-11",
       },
     },

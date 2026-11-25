@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { URL_LP, ehExterno } from "@/lib/links";
 
-const CLS = "-ml-2 flex size-11 flex-none items-center justify-center rounded-md text-foreground hover:bg-secondary";
+const CLS = "-ml-2 flex size-11 flex-none items-center justify-center rounded-full text-white hover:bg-white/10"; // fica no cabeçalho escuro
 
 /**
  * Seta de voltar do cabeçalho. Com `historico`, volta para a tela anterior (como o botão do navegador);
