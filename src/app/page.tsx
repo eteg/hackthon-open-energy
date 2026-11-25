@@ -1,19 +1,19 @@
-import Link from "next/link";
 import { ArrowRight, Building2, House } from "lucide-react";
+import { escolherPerfil } from "@/app/actions";
+import { PERFIS, type Perfil } from "@/lib/perfil";
 
-// MVP do hackathon: a home só pergunta quem é a pessoa e leva ao onboarding certo.
-// Os próximos fluxos de cada perfil ainda vão ser definidos; por ora cada botão abre a tela que já existe.
-const PERFIS = [
+// MVP do hackathon: a home só pergunta quem é a pessoa. O botão grava o perfil (cookie) e abre a primeira
+// tela dele; sem essa escolha, o proxy manda qualquer outra tela de volta para cá.
+// Os próximos fluxos de cada perfil ainda vão ser definidos; por ora cada um abre a tela que já existe.
+const OPCOES: { perfil: Perfil; icon: React.ElementType; texto: string }[] = [
   {
-    href: "/painel/empresa",
+    perfil: "varejista",
     icon: Building2,
-    titulo: "Varejista",
     texto: "Cadastre sua comercializadora e acompanhe os clientes que querem migrar.",
   },
   {
-    href: "/onboarding",
+    perfil: "consumidor",
     icon: House,
-    titulo: "Consumidor final",
     texto: "Envie sua conta de luz e veja quanto economiza antes de migrar.",
   },
 ];
@@ -26,24 +26,26 @@ export default function Home() {
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Como você quer começar?</h1>
       </div>
 
-      <div className="grid w-full max-w-3xl gap-4 sm:grid-cols-2">
-        {PERFIS.map(({ href, icon: Icon, titulo, texto }) => (
-          <Link
-            key={href}
-            href={href}
-            className="group flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-card-foreground shadow-sm transition-all outline-none hover:border-primary hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:p-8"
+      <form action={escolherPerfil} className="grid w-full max-w-3xl gap-4 sm:grid-cols-2">
+        {OPCOES.map(({ perfil, icon: Icon, texto }) => (
+          <button
+            key={perfil}
+            type="submit"
+            name="perfil"
+            value={perfil}
+            className="group flex cursor-pointer flex-col items-center gap-3 rounded-xl border bg-card p-6 text-card-foreground shadow-sm transition-all outline-none hover:border-primary hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:p-8"
           >
             <span className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
               <Icon className="size-7" />
             </span>
-            <span className="text-xl font-semibold">{titulo}</span>
+            <span className="text-xl font-semibold">{PERFIS[perfil].titulo}</span>
             <span className="text-sm text-muted-foreground">{texto}</span>
             <span className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary">
               Começar <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
             </span>
-          </Link>
+          </button>
         ))}
-      </div>
+      </form>
     </section>
   );
 }

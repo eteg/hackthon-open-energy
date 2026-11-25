@@ -20,7 +20,7 @@ Para novos componentes shadcn: `npx shadcn@latest add dialog` (o `components.jso
 
 | Rota | O que mostra |
 |---|---|
-| `/` | Escolha do perfil (MVP): **Varejista** leva ao cadastro da empresa e **Consumidor final** ao onboarding |
+| `/` | Escolha do perfil (MVP): **Varejista** leva ao cadastro da empresa e **Consumidor final** ao onboarding. As outras telas só abrem depois dessa escolha (sem perfil, voltam para a home) |
 | `/onboarding` | Fatura → dados extraídos → simulação honesta com recibo → ciência de riscos → pedido de migração |
 | `/atendimento` | Agente com RAG + fonte, escalonamento para humano e bloqueio de prompt injection |
 | `/painel` | Casos por etapa, risco de desistência, **aprovação humana** da migração, observabilidade da IA |
@@ -43,6 +43,9 @@ src/lib/agente.ts           Agente: modo LLM (Anthropic) ou offline (RAG + templ
 src/lib/store.ts            Estado em memória (casos e cadastro do varejista) + evidências e observabilidade em logs/*.jsonl
 src/lib/varejista.ts        Schema do cadastro do varejista (zod, usado no formulário e na API), CNPJ e máscaras
 src/lib/api.ts              Cliente Axios usado por todas as telas
+src/lib/perfil.ts           Perfis do MVP (varejista, consumidor) e a tela inicial de cada um
+src/app/actions.ts          Server Action da home: grava o perfil escolhido num cookie
+src/proxy.ts                Só libera as telas depois da escolha do perfil (as rotas /api ficam abertas)
 src/app/api/*               Rotas: faturas, faturas/extrair, simulacao, regras, agente, casos, casos/[id]/aprovar, observabilidade, varejista
 ```
 
