@@ -3,6 +3,7 @@ import { BotaoVoltar } from "./botao-voltar";
 import { ContaLink } from "./conta-link";
 import { Logo } from "./logo";
 import { PassoProgress } from "./passo-progress";
+import { URL_LP } from "@/lib/links";
 import { cn } from "@/lib/utils";
 
 /**
@@ -36,7 +37,7 @@ export function SiteShell({
         <header className="flex h-14 flex-none items-center justify-between border-b px-4">
           <div className="flex items-center gap-1">
             {voltar && <BotaoVoltar {...voltar} />}
-            <Link href="/" aria-label="Trevolt, página inicial">
+            <Link href={URL_LP} aria-label="Trevolt, página inicial">
               <Logo />
             </Link>
           </div>

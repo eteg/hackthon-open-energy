@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { URL_LP } from "@/lib/links";
 import { useSessao } from "@/lib/sessao";
 import { useCasoDemo, type CasoDemo } from "@/lib/demo/store";
 
@@ -25,7 +26,7 @@ function rotaDoCaso(c: CasoDemo): string {
     case "ccv_aguardando":
     case "distribuidora_validando":
     case "em_vigor": return `/caso/${c.id}`;
-    default: return "/";
+    default: return "/fatura";
   }
 }
 
@@ -60,7 +61,7 @@ export function EntrarConsumidor() {
   return (
     <SiteShell
       topo={<span />}
-      voltar={{ href: "/", historico: true }}
+      voltar={{ href: URL_LP, historico: true }}
       acao={
         <>
           <Button size="lg" type="submit" form="form-entrar" disabled={enviando} aria-busy={enviando}>

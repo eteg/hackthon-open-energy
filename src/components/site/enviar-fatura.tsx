@@ -4,7 +4,9 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Camera, LoaderCircle } from "lucide-react";
+import { ContaLink } from "@/components/trevolt/conta-link";
 import { SiteShell } from "@/components/trevolt/site-shell";
+import { URL_LP } from "@/lib/links";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -121,7 +123,7 @@ export function EnviarFatura() {
   // S2b: imagem que não é uma conta (e demais falhas de leitura)
   if (falha) {
     return (
-      <SiteShell topo={<span />} voltar={{ href: "/" }}
+      <SiteShell topo={<ContaLink />} voltar={{ href: URL_LP }}
         passo={{ n: 1 }}
        
         acao={
@@ -180,7 +182,7 @@ export function EnviarFatura() {
 
   // S2: enviar a fatura, com consentimento
   return (
-    <SiteShell topo={<span />} voltar={{ href: "/" }}
+    <SiteShell topo={<ContaLink />} voltar={{ href: URL_LP }}
       passo={{ n: 1 }}
      
       acao={

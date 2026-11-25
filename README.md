@@ -39,9 +39,11 @@ Código: `src/lib/supabase/` (clientes do navegador e do servidor), `src/lib/ses
 
 | Grupo | Rotas |
 | --- | --- |
-| Site do consumidor (mobile first) | `/`, `/fatura`, `/fatura/conferir`, `/fatura/digitar`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]`, `/assistente` |
+| Site do consumidor (mobile first) | `/fatura` (entrada vinda da LP), `/fatura/conferir`, `/fatura/digitar`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]`, `/assistente` |
 | Console do fornecedor | `/console`, `/console/casos/[id]`, `/console/permissoes` |
 | Portal do fornecedor | `/varejista/entrar`, `/varejista/cadastro`, `/varejista/analise` |
+
+A home é a landing page [trevolt.vercel.app](https://trevolt.vercel.app/) (`src/lib/links.ts`): a raiz `/` do app redireciona para ela, todo logo e seta de início levam para ela (o console e o portal do fornecedor, para a página de fornecedores da LP) e a pessoa entra no app pelo botão da LP, que abre `/fatura`.
 
 O consumidor contrata sem conta e sem códigos de verificação: o caso fica guardado no navegador. Telas sem API (aceite, CCV e CCEE, permissões, credencial, convites) usam estado simulado e mostram a faixa "Demonstração".
 

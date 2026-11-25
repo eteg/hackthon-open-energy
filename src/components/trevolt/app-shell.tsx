@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
+import { URL_LP_FORNECEDORES } from "@/lib/links";
 import { cn } from "@/lib/utils";
 
 export type NavItem = { href: string; label: string };
@@ -33,7 +34,7 @@ export function AppShell({ area, nav, children, direita }: { area: string; nav: 
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b bg-card px-4 py-3 md:px-6">
-        <Link href="/" aria-label="Trevolt, página inicial" className="flex items-center gap-3">
+        <Link href={URL_LP_FORNECEDORES} aria-label="Trevolt para fornecedores, página inicial" className="flex items-center gap-3">
           <Logo />
           <span className="hidden text-sm text-muted-foreground sm:inline">{area}</span>
         </Link>
