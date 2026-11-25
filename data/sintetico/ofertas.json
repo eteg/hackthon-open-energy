@@ -1,0 +1,37 @@
+[
+  {
+    "id": "of-alfa",
+    "varejista": "Varejista Alfa (fictícia)",
+    "nome": "25% de desconto na energia · 12 meses",
+    "tipo": "desconto_percentual",
+    "desconto_energia_pct": 25,
+    "prazo_meses": 12,
+    "taxa_mensal_rs": 0,
+    "reajuste": "Acompanha a tarifa de energia da distribuidora",
+    "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses"
+  },
+  {
+    "id": "of-beta",
+    "varejista": "Varejista Beta (fictícia)",
+    "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+    "tipo": "preco_fixo",
+    "preco_energia_rs_kwh": 0.215,
+    "prazo_meses": 36,
+    "taxa_mensal_rs": 0,
+    "reajuste": "IPCA anual",
+    "multa": "30% do valor restante do contrato"
+  },
+  {
+    "id": "of-gama",
+    "varejista": "Varejista Gama (fictícia)",
+    "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+    "tipo": "indexado",
+    "desconto_inicial_pct": 35,
+    "meses_iniciais": 3,
+    "desconto_apos_pct": 15,
+    "prazo_meses": 24,
+    "taxa_mensal_rs": 39.9,
+    "reajuste": "Indexado ao preço de energia de curto prazo",
+    "multa": "Sem multa após 6 meses; antes disso, R$ 300"
+  }
+]

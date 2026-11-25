@@ -1,0 +1,72 @@
+# Regras versionadas — o código lê daqui; mudou a regra, muda o arquivo (não o código).
+# Regulatório = tem fonte. Premissa do produto = configurável pelo varejista, sem fonte regulatória.
+versao: "2026-11"
+base_conferida_em: "2026-11-23"
+nome_varejista: "Varejista Demo (fictícia)"
+
+abertura_por_classe:            # Grupo B, por classe
+  comercial: "2027-11-25"
+  industrial: "2027-11-25"
+  residencial: "2028-11-25"
+  rural: "2028-11-25"
+fonte_abertura: "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+
+grupo_b_tensao_max_v: 2300      # < 2,3 kV
+antecedencia_migracao_dias: 90  # Decreto nº 13.097/2026, arts. 2º e 3º
+retorno_acr_aviso_meses: 12     # Decreto nº 13.097/2026 (pode ser reduzido pela distribuidora/ANEEL)
+arrependimento_dias: 7          # CDC, contratação fora do estabelecimento
+
+beneficios_nao_aplicaveis:      # perdidos ao migrar — exigem ciência prévia
+  TSEE: "Tarifa Social de Energia Elétrica (TSEE)"
+  irrigacao: "Desconto de irrigação"
+  aquicultura: "Desconto de aquicultura"
+fonte_beneficios: "Decreto nº 13.097/2026"
+
+# ---- Premissas do produto (não são regra da ANEEL) ----
+premissas_produto:
+  horizonte_meses: 12
+  economia_minima_mensal_rs: 30          # abaixo disso o produto diz "não compensa agora"
+  limiar_confianca_agente: 0.6
+  cenarios:                              # variação da tarifa de energia do mercado cativo
+    pessimista: -5
+    base: 0
+    otimista: 5
+  textos:
+    - "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses."
+    - "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam."
+    - "Tributos mantidos constantes (conservador)."
+    - "Bandeira tarifária não contada como economia (conservador)."
+    - "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+
+pendencias_aneel:
+  - "Tarifas do ACR e do ACL com segregação de custos"
+  - "Produto padrão e preço de referência"
+  - "Encargo de sobrecontratação"
+  - "Tarifas do SUI"
+  - "Migração simplificada e portabilidade"
+  - "Medição, faturamento, cobrança e suspensão no varejo"
+  - "Fim do desconto na TUSD/TUST para quem migra (CP 40/2026)"
+  - "Encargo fixo na baixa tensão (CP 16/2026)"
+
+ciencia_obrigatoria:
+  - id: perda_beneficios
+    texto: "Ao migrar, perco a Tarifa Social (TSEE) e os descontos de irrigação e aquicultura, se eu os tiver."
+    fonte: "Decreto nº 13.097/2026"
+  - id: antecedencia
+    texto: "A migração precisa ser formalizada à distribuidora com 90 dias de antecedência."
+    fonte: "Decreto nº 13.097/2026, arts. 2º e 3º"
+  - id: retorno_acr
+    texto: "Voltar ao mercado regulado exige aviso prévio de até 12 meses."
+    fonte: "Decreto nº 13.097/2026"
+  - id: rede_distribuidora
+    texto: "A distribuidora continua cuidando da rede e das faltas de luz; o varejista vende só a energia."
+    fonte: "Decreto nº 13.097/2026"
+  - id: sui
+    texto: "Se o varejista sair do mercado, sou atendido temporariamente pelo Supridor de Última Instância (SUI), com tarifa crescente."
+    fonte: "Decreto nº 13.097/2026"
+  - id: sem_garantia
+    texto: "A economia é uma estimativa em faixa, com premissas. Não é garantida."
+    fonte: "Decreto nº 13.097/2026 (dever de informação clara)"
+  - id: arrependimento
+    texto: "Posso desistir em até 7 dias se contratar fora do estabelecimento (online, telefone, WhatsApp)."
+    fonte: "Código de Defesa do Consumidor"
