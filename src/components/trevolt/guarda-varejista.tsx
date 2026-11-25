@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 
 /** Só deixa passar quem entrou como fornecedor; os demais vão para o login. (Proteção de demonstração, no cliente.) */
 export function GuardaVarejista({ children }: { children: React.ReactNode }) {

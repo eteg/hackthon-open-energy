@@ -8,21 +8,23 @@ import { Input } from "@/components/ui/input";
 import { DemoBanner } from "@/components/trevolt/demo-banner";
 import { Campo, CampoTexto } from "@/components/varejista/campo";
 import { CascaVarejista, linkCobre } from "@/components/varejista/casca";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Login do fornecedor: e-mail e senha (usuário de teste em `auth-mock`). Sem código, sem recuperação de senha. */
+/** Login do fornecedor pelo Supabase Auth (e-mail e senha). Sem código, sem recuperação de senha. */
 export function EntrarVarejista() {
   const router = useRouter();
-  const { entrar: entrarMock } = useSessao();
+  const { entrar: entrarSupabase } = useSessao();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrar, setMostrar] = useState(false);
+  const [entrando, setEntrando] = useState(false);
   const [erros, setErros] = useState<Partial<Record<"email" | "senha", string>>>({});
 
-  function entrar(e: React.FormEvent) {
+  async function entrar(e: React.FormEvent) {
     e.preventDefault();
+    if (entrando) return;
     if (!EMAIL.test(email.trim())) {
       setErros({ email: "Informe um e-mail corporativo válido" });
       document.getElementById("email")?.focus();
@@ -33,12 +35,20 @@ export function EntrarVarejista() {
       document.getElementById("senha")?.focus();
       return;
     }
-    if (!entrarMock(email, senha)) {
-      setErros({ senha: "E-mail ou senha incorretos" });
-      document.getElementById("senha")?.focus();
-      return;
+    setEntrando(true);
+    try {
+      // `perfil`: o portal do fornecedor recusa (e encerra) a sessão de quem não é fornecedor.
+      if (!(await entrarSupabase(email, senha, "varejista"))) {
+        setErros({ senha: "E-mail ou senha incorretos" });
+        document.getElementById("senha")?.focus();
+        return;
+      }
+      router.push("/console");
+    } catch (falha) {
+      setErros({ senha: falha instanceof Error ? falha.message : "Não consegui entrar agora. Tente de novo." });
+    } finally {
+      setEntrando(false);
     }
-    router.push("/console");
   }
 
   return (
@@ -65,11 +75,11 @@ export function EntrarVarejista() {
                 </button>
               </div>
             </Campo>
-            <Button type="submit" className="min-h-12">Entrar</Button>
+            <Button type="submit" className="min-h-12" disabled={entrando} aria-busy={entrando}>{entrando ? "Entrando…" : "Entrar"}</Button>
           </form>
         </Card>
 
-        <DemoBanner className="max-w-[440px]">Login de teste, validado no navegador. Nada é enviado de verdade.</DemoBanner>
+        <DemoBanner className="max-w-[440px]">Ambiente de demonstração: use a conta de teste do fornecedor. Os dados são sintéticos.</DemoBanner>
       </div>
     </CascaVarejista>
   );

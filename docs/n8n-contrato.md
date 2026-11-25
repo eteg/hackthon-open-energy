@@ -5,6 +5,8 @@ O app (Next.js) é só front. Toda a API é um serviço n8n. O navegador chama `
 `Content-Type`, e `Authorization: Bearer ${N8N_TOKEN}` se houver token. Sem `N8N_BASE_URL`, o proxy responde em
 **modo demonstração** (`src/lib/demo-api`, respostas fixas).
 
+Login: quando o Supabase está configurado, o proxy exige sessão de fornecedor (perfil `varejista`, vindo do `app_metadata` do Supabase Auth) em `GET /casos` e `POST /casos/{id}/aprovar`, e responde 401/403 sem repassar ao n8n. O consumidor não tem login. O banco do Supabase (`supabase/migrations/`) tem as tabelas `faturas`, `casos` e `evidencias`, que o n8n pode usar.
+
 Regras que o n8n deve seguir:
 - Responder **JSON**. Em erro, o corpo é `{ "erro": "mensagem legível em pt-BR" }` (a UI mostra esse texto). Erros de campo: `{ "erro": "...", "campos": { "<campo>": ["mensagem"] } }`.
 - Tipos de entrada e saída: `src/lib/types.ts` (zod) e `src/lib/api.ts`. Os formatos abaixo resumem; o código é a fonte da verdade.
@@ -34,6 +36,6 @@ Pontos de comportamento que a UI espera (estavam no código antigo, ver `n8n-ref
 
 **Link de acompanhamento do consumidor** (`/caso/{acompanhamento_id}`): é a única forma de o consumidor voltar a ver o andamento, sem login. Por isso:
 - O `acompanhamento_id` é o segredo do link: gere com um gerador criptográfico (≥ 128 bits), nunca derive do `id` sequencial do console (`caso-019`). `GET /casos/{id}` com o `id` do console deve dar 404.
-- **O `acompanhamento_id` só sai em `POST /casos`** (para quem criou o caso). `GET /casos` e `POST /casos/{id}/aprovar` NÃO podem devolvê-lo: senão quem listar os casos obtém os links de todos os consumidores. Essas rotas do console precisam de autenticação de fornecedor no n8n (hoje o proxy não autentica o usuário final; a proteção do console no front é só de tela).
+- **O `acompanhamento_id` só sai em `POST /casos`** (para quem criou o caso). `GET /casos` e `POST /casos/{id}/aprovar` NÃO podem devolvê-lo: senão quem listar os casos obtém os links de todos os consumidores. Essas rotas do console exigem sessão de fornecedor: o proxy já a exige quando o Supabase Auth está configurado; se o n8n for chamado por outro caminho, ele mesmo precisa autenticar.
 - A resposta é só a visão pública (`CasoPublico`): nada de ciência, hash, cliente, economia nem dados de outras pessoas. A `etapa` é a mesma que o fornecedor altera no console, então o que ele faz aparece para o consumidor.
 - Se o n8n enviar o link por e-mail ou WhatsApp ao aceitar, melhor ainda; a tela também mostra o link com "Copiar link".

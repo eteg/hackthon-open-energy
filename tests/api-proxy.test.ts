@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // O proxy chama connection() do Next (só existe dentro de uma requisição); nos testes é um no-op.
 vi.mock("next/server", () => ({ connection: async () => {} }));
+// Quem está logado vem do cookie do Supabase; nos testes, cada caso define o usuário.
+const usuarioDaRequisicao = vi.hoisted(() => vi.fn(async (): Promise<{ id: string; email: string; perfil: "varejista" | "consumidor" } | null> => null));
+vi.mock("@/lib/supabase/servidor", () => ({ usuarioDaRequisicao, supabaseAdmin: () => { throw new Error("sem banco nos testes"); } }));
 import { GET, POST } from "@/app/api/[...caminho]/route";
 import { demoResponder } from "@/lib/demo-api";
 import fx from "@/lib/demo-api/fixtures.json";
@@ -140,5 +143,41 @@ describe("modo demonstração (sem N8N_BASE_URL)", () => {
   it("recusa fatura incompleta e fatura inexistente", async () => {
     expect((await demoResponder({ metodo: "POST", caminho: "faturas/confirmar", json: { fatura: { titular: "X" } } })).status).toBe(422);
     expect((await demoResponder({ metodo: "POST", caminho: "simulacao", json: { faturaId: "nao-existe" } })).status).toBe(404);
+  });
+});
+
+describe("login do Supabase nas rotas do console", () => {
+  beforeEach(() => {
+    vi.stubEnv("N8N_BASE_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://projeto.supabase.test");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_teste");
+    vi.stubEnv("SUPABASE_SECRET_KEY", ""); // sem chave secreta: dados em memória
+    usuarioDaRequisicao.mockReset();
+  });
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("sem sessão responde 401 e com sessão de consumidor responde 403", async () => {
+    usuarioDaRequisicao.mockResolvedValueOnce(null);
+    expect((await GET(req("GET", "casos"), ctx("casos"))).status).toBe(401);
+    usuarioDaRequisicao.mockResolvedValueOnce({ id: "u1", email: "consumidor@gmail.com", perfil: "consumidor" });
+    expect((await POST(req("POST", "casos/caso-001/aprovar", { operador: "X" }), ctx("casos", "caso-001", "aprovar"))).status).toBe(403);
+  });
+
+  it("libera o console para o fornecedor", async () => {
+    usuarioDaRequisicao.mockResolvedValueOnce({ id: "u2", email: "varejista@gmail.com", perfil: "varejista" });
+    const r = await GET(req("GET", "casos"), ctx("casos"));
+    expect(r.status).toBe(200);
+    expect((await r.json()).casos.length).toBeGreaterThan(0);
+  });
+
+  it("as telas do consumidor seguem sem login e não consultam a sessão à toa", async () => {
+    expect((await GET(req("GET", "regras"), ctx("regras"))).status).toBe(200);
+    expect(usuarioDaRequisicao).not.toHaveBeenCalled();
+  });
+
+  it("sem Supabase configurado, o console segue aberto (modo demonstração puro)", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+    expect((await GET(req("GET", "casos"), ctx("casos"))).status).toBe(200);
+    expect(usuarioDaRequisicao).not.toHaveBeenCalled();
   });
 });

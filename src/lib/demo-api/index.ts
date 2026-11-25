@@ -1,22 +1,21 @@
 import "server-only";
 /**
  * Modo demonstração: responde no lugar do n8n quando N8N_BASE_URL não está definido.
- * As respostas são FIXAS (capturadas do serviço anterior) e só o estado mínimo do fluxo vive em memória
- * (faturas confirmadas e casos). NÃO calcula nada: faturas enviadas por arquivo
+ * As respostas são FIXAS (capturadas do serviço anterior) e só o estado mínimo do fluxo é guardado
+ * (faturas confirmadas, casos e evidências), no repositório escolhido pela rota:
+ * memória por padrão ou Supabase quando configurado. NÃO calcula nada: faturas enviadas por arquivo
  * simulam com os números da fatura de exemplo fat-001. Nenhuma regra de negócio mora aqui.
  */
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { validarFaturaCompleta } from "@/lib/fatura-campos";
-import type { Caso, CasoPublico, Fatura, Simulacao } from "@/lib/types";
+import { ETAPAS, type Caso, type CasoPublico, type Fatura, type Simulacao } from "@/lib/types";
 import fx from "./fixtures.json";
+import { repositorioMemoria, type Repositorio } from "./repositorio";
 
 export type RespostaDemo = { status: number; body: unknown };
-export type PedidoDemo = { metodo: string; caminho: string; json?: unknown; arquivo?: boolean };
-
-type Estado = { faturas: Fatura[]; casos: Caso[] };
-const g = globalThis as unknown as { __trevoltDemo?: Estado };
-const estado: Estado = (g.__trevoltDemo ??= { faturas: [], casos: structuredClone(fx.casos) as Caso[] });
+/** `usuarioId`: quem está logado (Supabase), para ligar faturas, casos e evidências à conta. */
+export type PedidoDemo = { metodo: string; caminho: string; json?: unknown; arquivo?: boolean; usuarioId?: string | null };
 
 /** O `acompanhamento_id` é o segredo do link do consumidor: só quem CRIA o caso o recebe. Listas e telas do console nunca o expõem. */
 const semSegredo = (c: Caso): Caso => {
@@ -31,16 +30,21 @@ const erro = (mensagem: string, status: number, extra: object = {}): RespostaDem
 const simulacoes = fx.simulacoes as unknown as Record<string, Simulacao>;
 const extracoes = fx.extracoes as unknown as Record<string, { fatura: Fatura } & Record<string, unknown>>;
 
+async function faturaDe(repo: Repositorio, id: string): Promise<Fatura | null> {
+  return (extracoes[id]?.fatura as Fatura | undefined) ?? (await repo.buscarFatura(id));
+}
+
 /** Fatura enviada por arquivo (`up-…`) usa a simulação fixa da fat-001. */
-function simulacaoDe(faturaId: string): Simulacao | null {
+async function simulacaoDe(repo: Repositorio, faturaId: string): Promise<Simulacao | null> {
   if (simulacoes[faturaId]) return structuredClone(simulacoes[faturaId]);
-  if (!estado.faturas.some((f) => f.id === faturaId)) return null;
+  if (!(await repo.buscarFatura(faturaId))) return null;
   return { ...structuredClone(simulacoes["fat-001"]), fatura_id: faturaId, recibo_id: randomUUID().replaceAll("-", "").slice(0, 16) };
 }
-const faturaDe = (id: string): Fatura | null =>
-  (extracoes[id]?.fatura as Fatura | undefined) ?? estado.faturas.find((f) => f.id === id) ?? null;
 
-export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDemo): Promise<RespostaDemo> {
+export async function demoResponder(
+  { metodo, caminho, json, arquivo, usuarioId = null }: PedidoDemo,
+  repo: Repositorio = repositorioMemoria()
+): Promise<RespostaDemo> {
   const rota = `${metodo} ${caminho}`;
   const corpo = (json ?? {}) as Record<string, unknown>;
 
@@ -62,21 +66,22 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
     const v = validarFaturaCompleta((corpo as { fatura?: unknown }).fatura);
     if (!v.success) return erro("Fatura incompleta ou inválida", 422, { campos: v.error.flatten().fieldErrors });
     const fatura: Fatura = { ...v.data, id: `up-${randomUUID().slice(0, 8)}` };
-    estado.faturas.push(fatura);
+    await repo.inserirFatura(fatura, usuarioId);
+    await repo.registrarEvidencia({ tipo: "fatura_confirmada", ref: fatura.id, dados: { titular: fatura.titular, uf: fatura.uf }, usuarioId });
     return ok(fatura, 201);
   }
 
   if (rota === "POST simulacao") {
     const id = z.object({ faturaId: z.string() }).safeParse(corpo);
     if (!id.success) return erro("faturaId obrigatório", 400);
-    const sim = simulacaoDe(id.data.faturaId);
+    const sim = await simulacaoDe(repo, id.data.faturaId);
     return sim ? ok(sim) : erro("Fatura não encontrada", 404);
   }
 
   if (rota === "GET regras") return ok(fx.regras);
   if (rota === "GET casos") {
-    const casos = estado.casos.map(semSegredo).sort((a, b) => b.criado_em.localeCompare(a.criado_em));
-    const por = Object.fromEntries(["simulado", "ciencia_pendente", "aguardando_aprovacao", "documentacao", "formalizado", "escalado_humano"].map((e) => [e, casos.filter((c) => c.etapa === e).length]));
+    const casos = (await repo.listarCasos()).map(semSegredo).sort((a, b) => b.criado_em.localeCompare(a.criado_em) || b.id.localeCompare(a.id));
+    const por = Object.fromEntries(ETAPAS.map((e) => [e, casos.filter((c) => c.etapa === e).length])) as Record<Caso["etapa"], number>;
     return ok({
       casos,
       kpis: {
@@ -95,38 +100,40 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
     const { faturaId, ofertaId, cienciaIds } = b.data;
     const faltando = (fx.regras.ciencia_obrigatoria as { id: string }[]).filter((c) => !cienciaIds.includes(c.id)).map((c) => c.id);
     if (faltando.length) return erro("Ciência incompleta", 422, { faltando });
-    const fatura = faturaDe(faturaId);
-    const sim = simulacaoDe(faturaId);
+    const fatura = await faturaDe(repo, faturaId);
+    const sim = await simulacaoDe(repo, faturaId);
     if (!fatura || !sim) return erro("Fatura não encontrada", 404);
     const oferta = sim.ofertas.find((o) => o.oferta_id === ofertaId);
     if (!oferta) return erro("Oferta não encontrada", 404);
     const agora = new Date().toISOString();
     const hash = createHash("sha256").update(JSON.stringify({ faturaId, ofertaId, cienciaIds, agora })).digest("hex");
-    const caso: Caso = {
-      id: `caso-${String(estado.casos.length + 1).padStart(3, "0")}`,
-      cliente: fatura.titular,
-      segmento: fatura.segmento,
-      uf: fatura.uf,
-      etapa: "aguardando_aprovacao",
-      criado_em: agora.slice(0, 10),
-      economia_liquida_mensal_rs: oferta.economia_liquida_mensal_rs.base,
-      oferta_id: ofertaId,
-      risco_desistencia: "baixo",
-      motivo_risco: null,
-      proxima_acao: "Operador revisar e aprovar a migração",
-      alerta_beneficio: fatura.beneficios.length > 0,
-      ciencia: { itens: cienciaIds, registrada_em: agora, hash },
-      recibo_id: sim.recibo_id,
-      acompanhamento_id: randomBytes(16).toString("base64url"), // 22 caracteres imprevisíveis: é o "segredo" do link
-    };
-    estado.casos.push(caso);
+    const caso = await repo.criarCaso(
+      {
+        cliente: fatura.titular,
+        segmento: fatura.segmento,
+        uf: fatura.uf,
+        etapa: "aguardando_aprovacao",
+        criado_em: agora.slice(0, 10),
+        economia_liquida_mensal_rs: oferta.economia_liquida_mensal_rs.base,
+        oferta_id: ofertaId,
+        risco_desistencia: "baixo",
+        motivo_risco: null,
+        proxima_acao: "Operador revisar e aprovar a migração",
+        alerta_beneficio: fatura.beneficios.length > 0,
+        ciencia: { itens: cienciaIds, registrada_em: agora, hash },
+        recibo_id: sim.recibo_id,
+        acompanhamento_id: randomBytes(16).toString("base64url"), // 22 caracteres imprevisíveis: é o "segredo" do link
+      },
+      { faturaId, usuarioId }
+    );
+    await repo.registrarEvidencia({ tipo: "ciencia", ref: caso.id, dados: { faturaId, ofertaId, itens: cienciaIds, hash }, usuarioId });
     return ok(caso, 201);
   }
 
   // Consulta pública pelo link: só o identificador longo vale (o `id` do console, "caso-019", não abre nada).
   const publico = caminho.match(/^casos\/([\w-]{16,64})$/);
   if (metodo === "GET" && publico) {
-    const caso = estado.casos.find((c) => c.acompanhamento_id === publico[1]);
+    const caso = await repo.buscarCasoPorAcompanhamento(publico[1]);
     if (!caso) return erro("Solicitação não encontrada", 404);
     const visao: CasoPublico = {
       numero: caso.id.replace(/^caso-/, ""),
@@ -142,12 +149,17 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
   if (metodo === "POST" && aprovar) {
     const b = z.object({ operador: z.string().min(2) }).safeParse(corpo);
     if (!b.success) return erro("Informe o operador", 400);
-    const caso = estado.casos.find((c) => c.id === aprovar[1]);
-    if (!caso) return erro("Caso não encontrado", 404);
-    if (caso.etapa !== "aguardando_aprovacao") return erro(`Caso está em "${caso.etapa}", não em aguardando_aprovacao`, 409);
-    caso.etapa = "documentacao";
-    caso.proxima_acao = "Coletar procuração e documentos da unidade";
-    caso.aprovado_por = { operador: b.data.operador, em: new Date().toISOString() };
+    const atual = await repo.buscarCaso(aprovar[1]);
+    if (!atual) return erro("Caso não encontrado", 404);
+    if (atual.etapa !== "aguardando_aprovacao") return erro(`Caso está em "${atual.etapa}", não em aguardando_aprovacao`, 409);
+    const aprovado_por = { operador: b.data.operador, em: new Date().toISOString() };
+    const caso = await repo.atualizarCaso(atual.id, "aguardando_aprovacao", {
+      etapa: "documentacao",
+      proxima_acao: "Coletar procuração e documentos da unidade",
+      aprovado_por,
+    });
+    if (!caso) return erro("O caso mudou de etapa enquanto você aprovava. Atualize a lista.", 409);
+    await repo.registrarEvidencia({ tipo: "aprovacao_humana", ref: caso.id, dados: aprovado_por, usuarioId });
     return ok(semSegredo(caso));
   }
 
