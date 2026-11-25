@@ -1,6 +1,6 @@
-# Copiloto de Migração · Mercado Livre de Energia BT
+# Trevolt · Energia do jeito combinado
 
-Hackathon ETEG 2026. Onboarding + simulação honesta + painel do varejista para a abertura do mercado livre na baixa tensão (25/11/2027). Referência de produto: Octopus Energy / Kraken, adaptada à ETEG (só a fatia de onboarding e atendimento, sem faturamento nem medição).
+Hackathon ETEG 2026. Front do MVP de contratação de energia no mercado livre de baixa tensão (abertura em 25/11/2027): envio da fatura, simulação honesta, ciência de riscos, aceite, acompanhamento, console do fornecedor e portal do fornecedor. Uma plataforma ETEG.
 
 > **Dados 100% sintéticos.** Nenhum dado real de cliente. Economia é sempre estimativa em faixa, nunca garantia.
 
@@ -8,73 +8,51 @@ Hackathon ETEG 2026. Onboarding + simulação honesta + painel do varejista para
 
 ```bash
 npm install
-cp .env.example .env.local   # opcional: sem chave, o agente roda offline (custo zero)
+cp .env.example .env.local   # opcional: sem N8N_BASE_URL o app roda em modo demonstração
 npm run dev                  # http://localhost:3000
-npm test                     # testes do simulador, guardrails e RAG
+npm test
 ```
 
-Stack: Next.js 16 (App Router, Cache Components) · Tailwind CSS 4 · shadcn/ui (Radix) · Axios · Zod · Vitest.
-Para novos componentes shadcn: `npx shadcn@latest add dialog` (o `components.json` já está configurado).
+Stack: Next.js 16 (App Router, Cache Components) · Tailwind CSS 4 · shadcn/ui (Radix) · Axios · Zod · Vitest. Marca: tokens do guia Trevolt em `src/app/globals.css`, Bricolage Grotesque e Inter (locais, via fontsource).
+
+## API: serviço n8n
+
+Este repositório é **só o front**. A API é um serviço n8n, em desenvolvimento em paralelo.
+
+- O navegador chama `/api/<caminho>`; o proxy `src/app/api/[...caminho]/route.ts` repassa para `${N8N_BASE_URL}/<caminho>` (com `N8N_TOKEN`, se houver). URL e token ficam só no servidor, e só os caminhos do contrato são repassados.
+- **Contrato**: [`docs/n8n-contrato.md`](docs/n8n-contrato.md). Cliente do front: `src/lib/api.ts`. Tipos: `src/lib/types.ts`.
+- **Sem `N8N_BASE_URL` = modo demonstração**: o proxy responde com dados fixos (`src/lib/demo-api`). Nada é calculado: uma fatura enviada por arquivo simula com os números da fatura de exemplo.
+- A lógica que existia nas rotas (simulador, regras, RAG, guardrails anti-injeção, agente, leitura de fatura por IA) está preservada em [`n8n-referencia/`](n8n-referencia/LEIA-ME.md) só para portar para o n8n. Não é compilada.
 
 ## Telas
 
-| Rota | O que mostra |
-|---|---|
-| `/` | Escolha do perfil (MVP): **Varejista** leva ao cadastro da empresa e **Consumidor final** ao onboarding. As outras telas só abrem depois dessa escolha (sem perfil, voltam para a home) |
-| `/onboarding` | Fatura → dados extraídos → simulação honesta com recibo → ciência de riscos → pedido de migração |
-| `/atendimento` | Agente com RAG + fonte, escalonamento para humano e bloqueio de prompt injection |
-| `/painel` | Casos por etapa, risco de desistência, **aprovação humana** da migração, observabilidade da IA |
-| `/painel/empresa` | Cadastro da comercializadora: CNPJ (numérico ou alfanumérico), habilitação na CCEE, estados de atuação, sede, canais de atendimento, responsável e encarregado de dados (LGPD), com declaração registrada por hash. O nome fantasia passa a ser usado pelo assistente |
+| Grupo | Rotas |
+| --- | --- |
+| Site do consumidor (mobile first) | `/`, `/fatura`, `/fatura/conferir`, `/fatura/digitar`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]`, `/assistente` |
+| Console do fornecedor | `/console`, `/console/casos/[id]`, `/console/permissoes` |
+| Portal do fornecedor | `/varejista/entrar`, `/varejista/cadastro`, `/varejista/analise` |
 
-## Regra de ouro (testada)
+O consumidor contrata sem conta e sem códigos de verificação: o caso fica guardado no navegador. Telas sem API (aceite, CCV e CCEE, permissões, credencial, convites) usam estado simulado e mostram a faixa "Demonstração".
 
-O desconto incide **só sobre a energia (TE)**. Na padaria sintética, energia = 32,4% da conta, então 25% na energia = **8,1% na conta** (`tests/simulador.test.ts`). O modelo de IA nunca calcula: `src/lib/simulador.ts` calcula, a IA explica.
+## Usuários de teste (mock)
 
-## Arquitetura
+Definidos no código, em `src/lib/auth-mock.ts`, e validados no navegador (as senhas ficam visíveis no JavaScript da página: servem só para a demonstração).
+
+| Perfil | E-mail | Senha | Onde entra |
+| --- | --- | --- | --- |
+| Fornecedor | `varejista@gmail.com` | `Teste123` | `/varejista/entrar` → `/console` (as rotas `/console/**` exigem esse login) |
+| Consumidor | `consumidor@gmail.com` | `Teste123` | `/entrar` (opcional: dá para contratar sem entrar) |
+
+## Estrutura
 
 ```
-regras/v2026-11.yaml        Regras versionadas com fonte (prazos, abertura por classe, benefícios, ciência)
-data/sintetico/*.json       Faturas, ofertas e casos fictícios (com casos de borda)
-conhecimento/faq-*.md       Base do RAG (cada "## pergunta" é um chunk)
-prompts/agente-sistema.md   System prompt do agente ({{variáveis}} preenchidas pelo código)
-src/lib/simulador.ts        Cálculo determinístico + recibo auditável (hash do input + versão das regras)
-src/lib/guardrails.ts       Anti-injection (camada 1) e gatilhos de escalonamento
-src/lib/agente.ts           Agente: modo LLM (Anthropic) ou offline (RAG + templates)
-src/lib/store.ts            Estado em memória (casos e cadastro do varejista) + evidências e observabilidade em logs/*.jsonl
-src/lib/varejista.ts        Schema do cadastro do varejista (zod, usado no formulário e na API), CNPJ e máscaras
+src/app/api/[...caminho]/   Proxy para o n8n (e modo demonstração)
 src/lib/api.ts              Cliente Axios usado por todas as telas
-src/lib/perfil.ts           Perfis do MVP (varejista, consumidor) e a tela inicial de cada um
-src/app/actions.ts          Server Action da home: grava o perfil escolhido num cookie
-src/proxy.ts                Só libera as telas depois da escolha do perfil (as rotas /api ficam abertas)
-src/app/api/*               Rotas: faturas, faturas/extrair, simulacao, regras, agente, casos, casos/[id]/aprovar, observabilidade, varejista
+src/lib/types.ts            Schemas (zod) e tipos do contrato
+src/lib/demo-api/           Respostas fixas do modo demonstração
+src/lib/demo/store.ts       Estado simulado do caso do consumidor (localStorage)
+src/components/trevolt/     Peças da marca (logo, selo, fio, casca do site e do console)
+src/components/ui/          shadcn/ui
+docs/n8n-contrato.md        Contrato da API para quem faz o n8n
+n8n-referencia/             Lógica de servidor anterior, só para portar
 ```
-
-## Casos de borda da base sintética
-
-| Fatura | Caso | O que o produto faz |
-|---|---|---|
-| fat-001 Padaria | Caso feliz | 25% na energia → 8,1% na conta, faixa e recibo |
-| fat-002 Metalúrgica | Indústria | Compara 3 ofertas |
-| fat-003 Sítio irrigante | Perde desconto de irrigação + só migra em 2028 | Alerta, desconta o benefício e diz que **não compensa** |
-| fat-004 Mercadinho | Consumo baixo | **Não compensa** (abaixo do mínimo do produto) |
-| fat-005 Oficina | **Prompt injection** no texto da fatura | Bloqueia, registra evidência, simulação não muda |
-| fat-006 Ateliê MEI | Tem TSEE + residencial | Alerta TSEE, 2028, não compensa |
-
-## Técnicas do catálogo (preencher com o que rodar ao vivo)
-
-1. **Interpretar documentos com saída tipada:** `FaturaSchema` (zod) em `src/lib/types.ts`. Hoje `/api/faturas/extrair` devolve a fatura pré-extraída (plano de falha). **TODO:** upload de PDF/foto + modelo de visão validado pelo mesmo schema.
-2. **Encontrar/analisar informação:** RAG sobre a FAQ regulatória com citação de fonte + simulador comparando 3 ofertas.
-3. **Executar ações com humano no circuito:** ciência registrada com hash, caso aberto em `aguardando_aprovacao`, só um operador aprova.
-
-## Critérios de qualidade (evidências)
-
-| Critério | Implementação | Evidência |
-|---|---|---|
-| Segurança | 3 camadas: regex de injeção → documento sanitizado antes do modelo → saída validada por zod e números só do simulador | `tests/`, fat-005, `logs/evidencias.jsonl` (`injecao_bloqueada`) |
-| Observabilidade | Latência, tokens, custo e escalonamento por chamada | `/api/observabilidade`, painel, `logs/observabilidade.jsonl` |
-| Controle humano | Ciência obrigatória (7 itens com fonte) + aprovação do operador | `POST /api/casos` (422 sem ciência), `POST /api/casos/[id]/aprovar` |
-| Custo | Modo offline com custo zero; custo do LLM calculado só com preços do `.env` | `.env.example` |
-
-## O que é mock
-
-Extração de fatura (base pré-extraída), ofertas e casos (fictícios), estado em memória (reinicia com o servidor), sem integração com CCEE, distribuidora ou assinatura digital.

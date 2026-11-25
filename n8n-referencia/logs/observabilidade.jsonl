@@ -1,0 +1,6 @@
+{"em":"2026-11-25T17:57:53.999Z","rota":"faturas/extrair","modo":"llm","modelo":"gemini-2.5-flash","latencia_ms":5130,"tokens_entrada":448,"tokens_saida":213,"custo_usd":null,"escalou":false,"alerta_injecao":false}
+{"em":"2026-11-25T18:05:32.959Z","rota":"faturas/extrair","modo":"llm","modelo":"gemini-2.5-flash","latencia_ms":6077,"tokens_entrada":448,"tokens_saida":260,"custo_usd":null,"escalou":false,"alerta_injecao":false}
+{"em":"2026-11-25T18:24:39.219Z","rota":"faturas/extrair","modo":"llm","modelo":"gemini-2.5-flash","latencia_ms":3924,"tokens_entrada":448,"tokens_saida":225,"custo_usd":null,"escalou":false,"alerta_injecao":false}
+{"em":"2026-11-25T18:30:08.331Z","rota":"/api/agente","modo":"llm","modelo":"gemini-2.5-flash","latencia_ms":2676,"tokens_entrada":3969,"tokens_saida":212,"custo_usd":null,"escalou":false,"alerta_injecao":false}
+{"em":"2026-11-25T18:32:53.446Z","rota":"/api/agente","modo":"llm","modelo":"gemini-2.5-flash","latencia_ms":3737,"tokens_entrada":3983,"tokens_saida":224,"custo_usd":null,"escalou":false,"alerta_injecao":false}
+{"em":"2026-11-25T18:32:53.457Z","rota":"/api/agente","modo":"offline","modelo":null,"latencia_ms":0,"tokens_entrada":0,"tokens_saida":0,"custo_usd":0,"escalou":true,"alerta_injecao":false}

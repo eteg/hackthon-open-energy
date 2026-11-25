@@ -1,0 +1,1495 @@
+{
+ "faturas": [
+  {
+   "id": "fat-001",
+   "titular": "Padaria Pão Dourado (fictícia)",
+   "segmento": "Padaria",
+   "classe": "comercial",
+   "uf": "SP",
+   "total_rs": 2400,
+   "consumo_kwh": 2800,
+   "beneficios": []
+  },
+  {
+   "id": "fat-002",
+   "titular": "Metalúrgica Irmãos Faria (fictícia)",
+   "segmento": "Pequena indústria",
+   "classe": "industrial",
+   "uf": "MG",
+   "total_rs": 7900,
+   "consumo_kwh": 9500,
+   "beneficios": []
+  },
+  {
+   "id": "fat-003",
+   "titular": "Sítio Boa Água (fictício)",
+   "segmento": "Produtor rural irrigante",
+   "classe": "rural",
+   "uf": "PR",
+   "total_rs": 2800,
+   "consumo_kwh": 4200,
+   "beneficios": [
+    "irrigacao"
+   ]
+  },
+  {
+   "id": "fat-004",
+   "titular": "Mercadinho Vila Nova (fictício)",
+   "segmento": "Mercearia de bairro",
+   "classe": "comercial",
+   "uf": "BA",
+   "total_rs": 260,
+   "consumo_kwh": 300,
+   "beneficios": []
+  },
+  {
+   "id": "fat-005",
+   "titular": "Oficina Rota Sul (fictícia)",
+   "segmento": "Oficina mecânica",
+   "classe": "comercial",
+   "uf": "RS",
+   "total_rs": 1380,
+   "consumo_kwh": 1600,
+   "beneficios": []
+  },
+  {
+   "id": "fat-006",
+   "titular": "Ateliê da Dona Lia (fictício)",
+   "segmento": "MEI de costura em casa",
+   "classe": "residencial",
+   "uf": "CE",
+   "total_rs": 103,
+   "consumo_kwh": 180,
+   "beneficios": [
+    "TSEE"
+   ]
+  }
+ ],
+ "regras": {
+  "versao": "2026-11",
+  "base_conferida_em": "2026-11-23",
+  "nome_varejista": "Varejista Demo (fictícia)",
+  "ciencia_obrigatoria": [
+   {
+    "id": "perda_beneficios",
+    "texto": "Ao migrar, perco a Tarifa Social (TSEE) e os descontos de irrigação e aquicultura, se eu os tiver.",
+    "fonte": "Decreto nº 13.097/2026"
+   },
+   {
+    "id": "antecedencia",
+    "texto": "A migração precisa ser formalizada à distribuidora com 90 dias de antecedência.",
+    "fonte": "Decreto nº 13.097/2026, arts. 2º e 3º"
+   },
+   {
+    "id": "retorno_acr",
+    "texto": "Voltar ao mercado regulado exige aviso prévio de até 12 meses.",
+    "fonte": "Decreto nº 13.097/2026"
+   },
+   {
+    "id": "rede_distribuidora",
+    "texto": "A distribuidora continua cuidando da rede e das faltas de luz; o varejista vende só a energia.",
+    "fonte": "Decreto nº 13.097/2026"
+   },
+   {
+    "id": "sui",
+    "texto": "Se o varejista sair do mercado, sou atendido temporariamente pelo Supridor de Última Instância (SUI), com tarifa crescente.",
+    "fonte": "Decreto nº 13.097/2026"
+   },
+   {
+    "id": "sem_garantia",
+    "texto": "A economia é uma estimativa em faixa, com premissas. Não é garantida.",
+    "fonte": "Decreto nº 13.097/2026 (dever de informação clara)"
+   },
+   {
+    "id": "arrependimento",
+    "texto": "Posso desistir em até 7 dias se contratar fora do estabelecimento (online, telefone, WhatsApp).",
+    "fonte": "Código de Defesa do Consumidor"
+   }
+  ],
+  "premissas": [
+   "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+   "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+   "Tributos mantidos constantes (conservador).",
+   "Bandeira tarifária não contada como economia (conservador).",
+   "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+  ],
+  "pendencias_aneel": [
+   "Tarifas do ACR e do ACL com segregação de custos",
+   "Produto padrão e preço de referência",
+   "Encargo de sobrecontratação",
+   "Tarifas do SUI",
+   "Migração simplificada e portabilidade",
+   "Medição, faturamento, cobrança e suspensão no varejo",
+   "Fim do desconto na TUSD/TUST para quem migra (CP 40/2026)",
+   "Encargo fixo na baixa tensão (CP 16/2026)"
+  ]
+ },
+ "observabilidade": {
+  "chamadas": 0,
+  "latencia_media_ms": 0,
+  "tokens_entrada": 0,
+  "tokens_saida": 0,
+  "custo_total_usd": 0,
+  "taxa_escalonamento": 0,
+  "injecoes_bloqueadas": 0,
+  "ultimas": []
+ },
+ "casos": [
+  {
+   "id": "caso-018",
+   "cliente": "Auto Peças Avenida (fictício)",
+   "segmento": "Comércio",
+   "uf": "PR",
+   "etapa": "documentacao",
+   "criado_em": "2026-11-20",
+   "economia_liquida_mensal_rs": 89,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Fatura subiu no último mês",
+   "proxima_acao": "Coletar procuração e documentos da unidade",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-017",
+   "cliente": "Restaurante Sabor Caseiro (fictício)",
+   "segmento": "Restaurante",
+   "uf": "RJ",
+   "etapa": "aguardando_aprovacao",
+   "criado_em": "2026-11-19",
+   "economia_liquida_mensal_rs": 352,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Achou que o desconto era na conta inteira",
+   "proxima_acao": "Operador revisar e aprovar a migração",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-016",
+   "cliente": "Serralheria Aço Forte (fictício)",
+   "segmento": "Pequena indústria",
+   "uf": "ES",
+   "etapa": "formalizado",
+   "criado_em": "2026-11-18",
+   "economia_liquida_mensal_rs": 315,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Acompanhar pedido na distribuidora",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-015",
+   "cliente": "Pet Shop Patas (fictício)",
+   "segmento": "Pet shop",
+   "uf": "MG",
+   "etapa": "simulado",
+   "criado_em": "2026-11-17",
+   "economia_liquida_mensal_rs": 278,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Sem resposta há 12 dias",
+   "proxima_acao": "Enviar recibo de economia e convidar para a ciência de riscos",
+   "alerta_beneficio": true
+  },
+  {
+   "id": "caso-014",
+   "cliente": "Lanchonete Esquina (fictício)",
+   "segmento": "Lanchonete",
+   "uf": "DF",
+   "etapa": "ciencia_pendente",
+   "criado_em": "2026-11-16",
+   "economia_liquida_mensal_rs": 241,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Cliente comparou com oferta concorrente",
+   "proxima_acao": "Lembrar o cliente de concluir a ciência de riscos",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-013",
+   "cliente": "Confecção Fio de Ouro (fictício)",
+   "segmento": "Pequena indústria",
+   "uf": "SC",
+   "etapa": "documentacao",
+   "criado_em": "2026-11-15",
+   "economia_liquida_mensal_rs": 204,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Coletar procuração e documentos da unidade",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-012",
+   "cliente": "Clínica Sorriso (fictício)",
+   "segmento": "Clínica",
+   "uf": "SP",
+   "etapa": "aguardando_aprovacao",
+   "criado_em": "2026-11-14",
+   "economia_liquida_mensal_rs": 167,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Fatura subiu no último mês",
+   "proxima_acao": "Operador revisar e aprovar a migração",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-011",
+   "cliente": "Mercado Bom Preço (fictício)",
+   "segmento": "Supermercado",
+   "uf": "PE",
+   "etapa": "escalado_humano",
+   "criado_em": "2026-11-13",
+   "economia_liquida_mensal_rs": 130,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Achou que o desconto era na conta inteira",
+   "proxima_acao": "Atendente humano retomar o caso (pergunta jurídica sobre multa)",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-010",
+   "cliente": "Hotel Pousada Sol (fictício)",
+   "segmento": "Pousada",
+   "uf": "CE",
+   "etapa": "simulado",
+   "criado_em": "2026-11-12",
+   "economia_liquida_mensal_rs": 93,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Enviar recibo de economia e convidar para a ciência de riscos",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-009",
+   "cliente": "Gráfica Tinta Viva (fictício)",
+   "segmento": "Gráfica",
+   "uf": "RS",
+   "etapa": "formalizado",
+   "criado_em": "2026-11-11",
+   "economia_liquida_mensal_rs": 356,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Sem resposta há 12 dias",
+   "proxima_acao": "Acompanhar pedido na distribuidora",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-008",
+   "cliente": "Sorveteria Polar (fictício)",
+   "segmento": "Sorveteria",
+   "uf": "BA",
+   "etapa": "documentacao",
+   "criado_em": "2026-11-10",
+   "economia_liquida_mensal_rs": 319,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Cliente comparou com oferta concorrente",
+   "proxima_acao": "Coletar procuração e documentos da unidade",
+   "alerta_beneficio": true
+  },
+  {
+   "id": "caso-007",
+   "cliente": "Açougue Boi Gordo (fictício)",
+   "segmento": "Açougue",
+   "uf": "GO",
+   "etapa": "aguardando_aprovacao",
+   "criado_em": "2026-11-09",
+   "economia_liquida_mensal_rs": 282,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Operador revisar e aprovar a migração",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-006",
+   "cliente": "Marcenaria Pinho Real (fictício)",
+   "segmento": "Pequena indústria",
+   "uf": "SC",
+   "etapa": "ciencia_pendente",
+   "criado_em": "2026-11-08",
+   "economia_liquida_mensal_rs": 245,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Fatura subiu no último mês",
+   "proxima_acao": "Lembrar o cliente de concluir a ciência de riscos",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-005",
+   "cliente": "Academia Corpo Ativo (fictício)",
+   "segmento": "Academia",
+   "uf": "PR",
+   "etapa": "formalizado",
+   "criado_em": "2026-11-07",
+   "economia_liquida_mensal_rs": 208,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Achou que o desconto era na conta inteira",
+   "proxima_acao": "Acompanhar pedido na distribuidora",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-004",
+   "cliente": "Pizzaria Forno a Lenha (fictício)",
+   "segmento": "Restaurante",
+   "uf": "MG",
+   "etapa": "documentacao",
+   "criado_em": "2026-11-06",
+   "economia_liquida_mensal_rs": 171,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Coletar procuração e documentos da unidade",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-003",
+   "cliente": "Lavanderia Bolha Azul (fictício)",
+   "segmento": "Lavanderia",
+   "uf": "RJ",
+   "etapa": "aguardando_aprovacao",
+   "criado_em": "2026-11-05",
+   "economia_liquida_mensal_rs": 134,
+   "oferta_id": "of-gama",
+   "risco_desistencia": "alto",
+   "motivo_risco": "Sem resposta há 12 dias",
+   "proxima_acao": "Operador revisar e aprovar a migração",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-002",
+   "cliente": "Farmácia Saúde Já (fictício)",
+   "segmento": "Farmácia",
+   "uf": "SP",
+   "etapa": "ciencia_pendente",
+   "criado_em": "2026-11-04",
+   "economia_liquida_mensal_rs": 97,
+   "oferta_id": "of-beta",
+   "risco_desistencia": "medio",
+   "motivo_risco": "Cliente comparou com oferta concorrente",
+   "proxima_acao": "Lembrar o cliente de concluir a ciência de riscos",
+   "alerta_beneficio": false
+  },
+  {
+   "id": "caso-001",
+   "cliente": "Padaria Trigo Bom (fictício)",
+   "segmento": "Padaria",
+   "uf": "SP",
+   "etapa": "simulado",
+   "criado_em": "2026-11-03",
+   "economia_liquida_mensal_rs": 60,
+   "oferta_id": "of-alfa",
+   "risco_desistencia": "baixo",
+   "motivo_risco": null,
+   "proxima_acao": "Enviar recibo de economia e convidar para a ciência de riscos",
+   "alerta_beneficio": false
+  }
+ ],
+ "simulacoes": {
+  "fat-001": {
+   "recibo_id": "a3f4afcb4c992d9b",
+   "gerado_em": "2026-11-25T18:32:49.534Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-001",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2027-11-25",
+    "prazo_formalizacao": "2027-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 32.4,
+   "perda_beneficio_mensal_rs": 0,
+   "ofertas": [
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 184.68,
+      "base": 194.4,
+      "otimista": 204.12
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 184.68,
+      "base": 194.4,
+      "otimista": 204.12
+     },
+     "economia_pct_conta_base": 8.1,
+     "economia_liquida_horizonte_rs": 2332.8,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 777,60 de R$ 2.400,00 (32,4% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 777,60 × 25% = R$ 194,40/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 194,40/mês = 8,1% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 184,68 a R$ 204,12/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 22.58,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 136.72,
+      "base": 175.6,
+      "otimista": 214.48
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 136.72,
+      "base": 175.6,
+      "otimista": 214.48
+     },
+     "economia_pct_conta_base": 7.32,
+     "economia_liquida_horizonte_rs": 2107.2,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 777,60 de R$ 2.400,00 (32,4% da conta).",
+      "Preço fixo: 2800 kWh × R$ 0.2150 = R$ 602,00 → desconto equivalente de 22,6% na energia.",
+      "Economia bruta (base): R$ 777,60 × 22,6% = R$ 175,60/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 175,60/mês = 7,3% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 136,72 a R$ 214,48/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 147.74,
+      "base": 155.52,
+      "otimista": 163.3
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 107.84,
+      "base": 115.62,
+      "otimista": 123.4
+     },
+     "economia_pct_conta_base": 4.82,
+     "economia_liquida_horizonte_rs": 1387.44,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 777,60 de R$ 2.400,00 (32,4% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 777,60 × 20% = R$ 155,52/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 115,62/mês = 4,8% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 107,84 a R$ 123,40/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": "of-alfa",
+   "veredito": "compensa",
+   "alertas": [],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  },
+  "fat-002": {
+   "recibo_id": "321a7aa89db2b9d9",
+   "gerado_em": "2026-11-25T18:32:49.580Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-002",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2027-11-25",
+    "prazo_formalizacao": "2027-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 33,
+   "perda_beneficio_mensal_rs": 0,
+   "ofertas": [
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 619.16,
+      "base": 651.75,
+      "otimista": 684.34
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 619.16,
+      "base": 651.75,
+      "otimista": 684.34
+     },
+     "economia_pct_conta_base": 8.25,
+     "economia_liquida_horizonte_rs": 7821,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 2.607,00 de R$ 7.900,00 (33% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 2.607,00 × 25% = R$ 651,75/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 651,75/mês = 8,3% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 619,16 a R$ 684,34/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 21.65,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 434.15,
+      "base": 564.5,
+      "otimista": 694.85
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 434.15,
+      "base": 564.5,
+      "otimista": 694.85
+     },
+     "economia_pct_conta_base": 7.15,
+     "economia_liquida_horizonte_rs": 6774,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 2.607,00 de R$ 7.900,00 (33% da conta).",
+      "Preço fixo: 9500 kWh × R$ 0.2150 = R$ 2.042,50 → desconto equivalente de 21,7% na energia.",
+      "Economia bruta (base): R$ 2.607,00 × 21,7% = R$ 564,50/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 564,50/mês = 7,2% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 434,15 a R$ 694,85/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 495.33,
+      "base": 521.4,
+      "otimista": 547.47
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 455.43,
+      "base": 481.5,
+      "otimista": 507.57
+     },
+     "economia_pct_conta_base": 6.09,
+     "economia_liquida_horizonte_rs": 5778,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 2.607,00 de R$ 7.900,00 (33% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 2.607,00 × 20% = R$ 521,40/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 481,50/mês = 6,1% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 455,43 a R$ 507,57/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": "of-alfa",
+   "veredito": "compensa",
+   "alertas": [],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  },
+  "fat-003": {
+   "recibo_id": "3ac2cdeec77aef25",
+   "gerado_em": "2026-11-25T18:32:49.595Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-003",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2028-11-25",
+    "prazo_formalizacao": "2028-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 37.5,
+   "perda_beneficio_mensal_rs": 310,
+   "ofertas": [
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 249.38,
+      "base": 262.5,
+      "otimista": 275.63
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -60.62,
+      "base": -47.5,
+      "otimista": -34.37
+     },
+     "economia_pct_conta_base": -1.7,
+     "economia_liquida_horizonte_rs": -570,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 1.050,00 de R$ 2.800,00 (37,5% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 1.050,00 × 25% = R$ 262,50/mês.",
+      "Sem taxa mensal.",
+      "Benefício perdido ao migrar: − R$ 310,00/mês.",
+      "Economia líquida (base): -R$ 47,50/mês = -1,7% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 60,62 a -R$ 34,37/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 199.5,
+      "base": 210,
+      "otimista": 220.5
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -150.4,
+      "base": -139.9,
+      "otimista": -129.4
+     },
+     "economia_pct_conta_base": -5,
+     "economia_liquida_horizonte_rs": -1678.8,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 1.050,00 de R$ 2.800,00 (37,5% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 1.050,00 × 20% = R$ 210,00/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Benefício perdido ao migrar: − R$ 310,00/mês.",
+      "Economia líquida (base): -R$ 139,90/mês = -5% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 150,40 a -R$ 129,40/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 14,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 94.5,
+      "base": 147,
+      "otimista": 199.5
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -215.5,
+      "base": -163,
+      "otimista": -110.5
+     },
+     "economia_pct_conta_base": -5.82,
+     "economia_liquida_horizonte_rs": -1956,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 1.050,00 de R$ 2.800,00 (37,5% da conta).",
+      "Preço fixo: 4200 kWh × R$ 0.2150 = R$ 903,00 → desconto equivalente de 14% na energia.",
+      "Economia bruta (base): R$ 1.050,00 × 14% = R$ 147,00/mês.",
+      "Sem taxa mensal.",
+      "Benefício perdido ao migrar: − R$ 310,00/mês.",
+      "Economia líquida (base): -R$ 163,00/mês = -5,8% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 215,50 a -R$ 110,50/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": null,
+   "veredito": "nao_compensa",
+   "alertas": [
+    {
+     "tipo": "elegibilidade",
+     "severidade": "media",
+     "mensagem": "Classe rural: migração só a partir de 25/11/2028.",
+     "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+    },
+    {
+     "tipo": "perda_beneficio",
+     "severidade": "alta",
+     "mensagem": "Desconto de irrigação deixa de valer no mercado livre. Exige ciência prévia do cliente antes da migração.",
+     "fonte": "Decreto nº 13.097/2026"
+    }
+   ],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  },
+  "fat-004": {
+   "recibo_id": "bf13d98c346bbd85",
+   "gerado_em": "2026-11-25T18:32:49.614Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-004",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2027-11-25",
+    "prazo_formalizacao": "2027-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 32,
+   "perda_beneficio_mensal_rs": 0,
+   "ofertas": [
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 19.76,
+      "base": 20.8,
+      "otimista": 21.84
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 19.76,
+      "base": 20.8,
+      "otimista": 21.84
+     },
+     "economia_pct_conta_base": 8,
+     "economia_liquida_horizonte_rs": 249.6,
+     "compensa": false,
+     "motivo_nao_compensa": "Abaixo da economia mínima de R$ 30,00/mês (premissa do produto).",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 83,20 de R$ 260,00 (32% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 83,20 × 25% = R$ 20,80/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 20,80/mês = 8% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 19,76 a R$ 21,84/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 22.48,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 14.54,
+      "base": 18.7,
+      "otimista": 22.86
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 14.54,
+      "base": 18.7,
+      "otimista": 22.86
+     },
+     "economia_pct_conta_base": 7.19,
+     "economia_liquida_horizonte_rs": 224.4,
+     "compensa": false,
+     "motivo_nao_compensa": "Abaixo da economia mínima de R$ 30,00/mês (premissa do produto).",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 83,20 de R$ 260,00 (32% da conta).",
+      "Preço fixo: 300 kWh × R$ 0.2150 = R$ 64,50 → desconto equivalente de 22,5% na energia.",
+      "Economia bruta (base): R$ 83,20 × 22,5% = R$ 18,70/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 18,70/mês = 7,2% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 14,54 a R$ 22,86/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 15.81,
+      "base": 16.64,
+      "otimista": 17.47
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -24.09,
+      "base": -23.26,
+      "otimista": -22.43
+     },
+     "economia_pct_conta_base": -8.95,
+     "economia_liquida_horizonte_rs": -279.12,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 83,20 de R$ 260,00 (32% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 83,20 × 20% = R$ 16,64/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): -R$ 23,26/mês = -9% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 24,09 a -R$ 22,43/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": null,
+   "veredito": "nao_compensa",
+   "alertas": [],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  },
+  "fat-005": {
+   "recibo_id": "f6af092c62bcc0a1",
+   "gerado_em": "2026-11-25T18:32:49.640Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-005",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2027-11-25",
+    "prazo_formalizacao": "2027-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 32.32,
+   "perda_beneficio_mensal_rs": 0,
+   "ofertas": [
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 105.93,
+      "base": 111.5,
+      "otimista": 117.08
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 105.93,
+      "base": 111.5,
+      "otimista": 117.08
+     },
+     "economia_pct_conta_base": 8.08,
+     "economia_liquida_horizonte_rs": 1338,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 446,00 de R$ 1.380,00 (32,3% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 446,00 × 25% = R$ 111,50/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 111,50/mês = 8,1% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 105,93 a R$ 117,08/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 22.87,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 79.7,
+      "base": 102,
+      "otimista": 124.3
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 79.7,
+      "base": 102,
+      "otimista": 124.3
+     },
+     "economia_pct_conta_base": 7.39,
+     "economia_liquida_horizonte_rs": 1224,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 446,00 de R$ 1.380,00 (32,3% da conta).",
+      "Preço fixo: 1600 kWh × R$ 0.2150 = R$ 344,00 → desconto equivalente de 22,9% na energia.",
+      "Economia bruta (base): R$ 446,00 × 22,9% = R$ 102,00/mês.",
+      "Sem taxa mensal.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 102,00/mês = 7,4% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 79,70 a R$ 124,30/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 84.74,
+      "base": 89.2,
+      "otimista": 93.66
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": 44.84,
+      "base": 49.3,
+      "otimista": 53.76
+     },
+     "economia_pct_conta_base": 3.57,
+     "economia_liquida_horizonte_rs": 591.6,
+     "compensa": true,
+     "motivo_nao_compensa": null,
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 446,00 de R$ 1.380,00 (32,3% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 446,00 × 20% = R$ 89,20/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Sem benefício a perder.",
+      "Economia líquida (base): R$ 49,30/mês = 3,6% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): R$ 44,84 a R$ 53,76/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": "of-alfa",
+   "veredito": "compensa",
+   "alertas": [],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  },
+  "fat-006": {
+   "recibo_id": "e41c082000e2659a",
+   "gerado_em": "2026-11-25T18:32:49.665Z",
+   "versao_regras": "2026-11",
+   "fatura_id": "fat-006",
+   "elegibilidade": {
+    "grupo_b": true,
+    "data_abertura": "2028-11-25",
+    "prazo_formalizacao": "2028-08-27",
+    "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+   },
+   "parcela_energia_pct": 50.49,
+   "perda_beneficio_mensal_rs": 45,
+   "ofertas": [
+    {
+     "oferta_id": "of-beta",
+     "nome": "Preço fixo R$ 0,2150/kWh · 36 meses",
+     "varejista": "Fornecedor Beta",
+     "tipo": "preco_fixo",
+     "prazo_meses": 36,
+     "reajuste": "IPCA anual",
+     "multa": "30% do valor restante do contrato",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25.58,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 10.7,
+      "base": 13.3,
+      "otimista": 15.9
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -34.3,
+      "base": -31.7,
+      "otimista": -29.1
+     },
+     "economia_pct_conta_base": -30.78,
+     "economia_liquida_horizonte_rs": -380.4,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 52,00 de R$ 103,00 (50,5% da conta).",
+      "Preço fixo: 180 kWh × R$ 0.2150 = R$ 38,70 → desconto equivalente de 25,6% na energia.",
+      "Economia bruta (base): R$ 52,00 × 25,6% = R$ 13,30/mês.",
+      "Sem taxa mensal.",
+      "Benefício perdido ao migrar: − R$ 45,00/mês.",
+      "Economia líquida (base): -R$ 31,70/mês = -30,8% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 34,30 a -R$ 29,10/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-alfa",
+     "nome": "25% de desconto na energia · 12 meses",
+     "varejista": "Fornecedor Alfa",
+     "tipo": "desconto_percentual",
+     "prazo_meses": 12,
+     "reajuste": "Acompanha a tarifa de energia da distribuidora",
+     "multa": "3 meses da parcela de energia estimada, se sair antes de 12 meses",
+     "taxa_mensal_rs": 0,
+     "desconto_efetivo_energia_pct": 25,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 12.35,
+      "base": 13,
+      "otimista": 13.65
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -32.65,
+      "base": -32,
+      "otimista": -31.35
+     },
+     "economia_pct_conta_base": -31.07,
+     "economia_liquida_horizonte_rs": -384,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 52,00 de R$ 103,00 (50,5% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 25%.",
+      "Economia bruta (base): R$ 52,00 × 25% = R$ 13,00/mês.",
+      "Sem taxa mensal.",
+      "Benefício perdido ao migrar: − R$ 45,00/mês.",
+      "Economia líquida (base): -R$ 32,00/mês = -31,1% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 32,65 a -R$ 31,35/mês."
+     ]
+    },
+    {
+     "oferta_id": "of-gama",
+     "nome": "35% nos 3 primeiros meses, depois 15% · 24 meses",
+     "varejista": "Fornecedor Gama",
+     "tipo": "indexado",
+     "prazo_meses": 24,
+     "reajuste": "Indexado ao preço de energia de curto prazo",
+     "multa": "Sem multa após 6 meses; antes disso, R$ 300",
+     "taxa_mensal_rs": 39.9,
+     "desconto_efetivo_energia_pct": 20,
+     "economia_bruta_mensal_rs": {
+      "pessimista": 9.88,
+      "base": 10.4,
+      "otimista": 10.92
+     },
+     "economia_liquida_mensal_rs": {
+      "pessimista": -75.02,
+      "base": -74.5,
+      "otimista": -73.98
+     },
+     "economia_pct_conta_base": -72.33,
+     "economia_liquida_horizonte_rs": -894,
+     "compensa": false,
+     "motivo_nao_compensa": "Economia líquida negativa: taxa ou benefício perdido maior que o desconto.",
+     "memoria_calculo": [
+      "Energia (TE) na fatura: R$ 52,00 de R$ 103,00 (50,5% da conta).",
+      "Desconto médio sobre a energia em 12 meses: 20%.",
+      "Economia bruta (base): R$ 52,00 × 20% = R$ 10,40/mês.",
+      "Taxa mensal da oferta: − R$ 39,90.",
+      "Benefício perdido ao migrar: − R$ 45,00/mês.",
+      "Economia líquida (base): -R$ 74,50/mês = -72,3% da conta inteira.",
+      "Faixa (tarifa cativa -5% a +5%): -R$ 75,02 a -R$ 73,98/mês."
+     ]
+    }
+   ],
+   "melhor_oferta_id": null,
+   "veredito": "nao_compensa",
+   "alertas": [
+    {
+     "tipo": "elegibilidade",
+     "severidade": "media",
+     "mensagem": "Classe residencial: migração só a partir de 25/11/2028.",
+     "fonte": "Decreto nº 13.097/2026; Lei nº 15.269/2025"
+    },
+    {
+     "tipo": "perda_beneficio",
+     "severidade": "alta",
+     "mensagem": "Tarifa Social de Energia Elétrica (TSEE) deixa de valer no mercado livre. Exige ciência prévia do cliente antes da migração.",
+     "fonte": "Decreto nº 13.097/2026"
+    }
+   ],
+   "premissas": [
+    "Consumo e tarifas do mês de referência repetidos no horizonte de 12 meses.",
+    "Desconto aplicado só sobre a parcela de energia (TE); distribuição (TUSD), encargos e tributos não mudam.",
+    "Tributos mantidos constantes (conservador).",
+    "Bandeira tarifária não contada como economia (conservador).",
+    "Faixa: tarifa de energia do cativo variando de -5% a +5%."
+   ]
+  }
+ },
+ "extracoes": {
+  "fat-001": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-001",
+    "titular": "Padaria Pão Dourado (fictícia)",
+    "segmento": "Padaria",
+    "classe": "comercial",
+    "subgrupo": "B3",
+    "tensao_v": 220,
+    "distribuidora": "Distribuidora Paulista Sintética",
+    "uf": "SP",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 2800,
+    "historico_12m_kwh": [
+     2650,
+     2700,
+     2900,
+     3050,
+     3100,
+     2950,
+     2750,
+     2600,
+     2550,
+     2700,
+     2850,
+     2800
+    ],
+    "componentes": {
+     "energia_te_rs": 777.6,
+     "distribuicao_tusd_rs": 840,
+     "bandeira_rs": 0,
+     "cip_rs": 45,
+     "tributos_rs": 737.4,
+     "desconto_beneficio_rs": 0
+    },
+    "total_rs": 2400,
+    "beneficios": [],
+    "observacoes": "Caso feliz: comércio elegível em 25/11/2027."
+   },
+   "alerta_injecao": false,
+   "padroes_injecao": []
+  },
+  "fat-002": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-002",
+    "titular": "Metalúrgica Irmãos Faria (fictícia)",
+    "segmento": "Pequena indústria",
+    "classe": "industrial",
+    "subgrupo": "B3",
+    "tensao_v": 380,
+    "distribuidora": "Distribuidora Mineira Sintética",
+    "uf": "MG",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 9500,
+    "historico_12m_kwh": [
+     9100,
+     9300,
+     9800,
+     9900,
+     9600,
+     9400,
+     9200,
+     9300,
+     9700,
+     9800,
+     9400,
+     9500
+    ],
+    "componentes": {
+     "energia_te_rs": 2607,
+     "distribuicao_tusd_rs": 2780,
+     "bandeira_rs": 0,
+     "cip_rs": 85,
+     "tributos_rs": 2428,
+     "desconto_beneficio_rs": 0
+    },
+    "total_rs": 7900,
+    "beneficios": [],
+    "observacoes": "Indústria de pequeno porte, consumo estável."
+   },
+   "alerta_injecao": false,
+   "padroes_injecao": []
+  },
+  "fat-003": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-003",
+    "titular": "Sítio Boa Água (fictício)",
+    "segmento": "Produtor rural irrigante",
+    "classe": "rural",
+    "subgrupo": "B2",
+    "tensao_v": 220,
+    "distribuidora": "Distribuidora Paranaense Sintética",
+    "uf": "PR",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 4200,
+    "historico_12m_kwh": [
+     5200,
+     5100,
+     4300,
+     3200,
+     2800,
+     2600,
+     2900,
+     3600,
+     4400,
+     4800,
+     5000,
+     4200
+    ],
+    "componentes": {
+     "energia_te_rs": 1050,
+     "distribuicao_tusd_rs": 1130,
+     "bandeira_rs": 0,
+     "cip_rs": 30,
+     "tributos_rs": 900,
+     "desconto_beneficio_rs": 310
+    },
+    "total_rs": 2800,
+    "beneficios": [
+     "irrigacao"
+    ],
+    "observacoes": "Desconto de irrigação aplicado na fatura. Consumo sazonal."
+   },
+   "alerta_injecao": false,
+   "padroes_injecao": []
+  },
+  "fat-004": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-004",
+    "titular": "Mercadinho Vila Nova (fictício)",
+    "segmento": "Mercearia de bairro",
+    "classe": "comercial",
+    "subgrupo": "B3",
+    "tensao_v": 220,
+    "distribuidora": "Distribuidora Baiana Sintética",
+    "uf": "BA",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 300,
+    "historico_12m_kwh": [
+     290,
+     310,
+     320,
+     330,
+     300,
+     280,
+     270,
+     290,
+     300,
+     310,
+     300,
+     300
+    ],
+    "componentes": {
+     "energia_te_rs": 83.2,
+     "distribuicao_tusd_rs": 90,
+     "bandeira_rs": 0,
+     "cip_rs": 15,
+     "tributos_rs": 71.8,
+     "desconto_beneficio_rs": 0
+    },
+    "total_rs": 260,
+    "beneficios": [],
+    "observacoes": "Consumo baixo."
+   },
+   "alerta_injecao": false,
+   "padroes_injecao": []
+  },
+  "fat-005": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-005",
+    "titular": "Oficina Rota Sul (fictícia)",
+    "segmento": "Oficina mecânica",
+    "classe": "comercial",
+    "subgrupo": "B3",
+    "tensao_v": 220,
+    "distribuidora": "Distribuidora Gaúcha Sintética",
+    "uf": "RS",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 1600,
+    "historico_12m_kwh": [
+     1500,
+     1550,
+     1650,
+     1700,
+     1600,
+     1550,
+     1500,
+     1600,
+     1650,
+     1700,
+     1600,
+     1600
+    ],
+    "componentes": {
+     "energia_te_rs": 446,
+     "distribuicao_tusd_rs": 482,
+     "bandeira_rs": 0,
+     "cip_rs": 30,
+     "tributos_rs": 422,
+     "desconto_beneficio_rs": 0
+    },
+    "total_rs": 1380,
+    "beneficios": [],
+    "observacoes": "[conteúdo bloqueado: possível instrução embutida no documento]"
+   },
+   "alerta_injecao": true,
+   "padroes_injecao": [
+    "ignorar_instrucoes",
+    "revelar_prompt",
+    "aprovar_desconto",
+    "mensagem_sistema"
+   ]
+  },
+  "fat-006": {
+   "origem": "base_sintetica",
+   "fatura": {
+    "id": "fat-006",
+    "titular": "Ateliê da Dona Lia (fictício)",
+    "segmento": "MEI de costura em casa",
+    "classe": "residencial",
+    "subgrupo": "B1",
+    "tensao_v": 127,
+    "distribuidora": "Distribuidora Cearense Sintética",
+    "uf": "CE",
+    "mes_referencia": "2026-10",
+    "consumo_kwh": 180,
+    "historico_12m_kwh": [
+     170,
+     175,
+     185,
+     190,
+     180,
+     175,
+     170,
+     180,
+     185,
+     190,
+     180,
+     180
+    ],
+    "componentes": {
+     "energia_te_rs": 52,
+     "distribuicao_tusd_rs": 58,
+     "bandeira_rs": 0,
+     "cip_rs": 8,
+     "tributos_rs": 30,
+     "desconto_beneficio_rs": 45
+    },
+    "total_rs": 103,
+    "beneficios": [
+     "TSEE"
+    ],
+    "observacoes": "Tarifa Social aplicada."
+   },
+   "alerta_injecao": false,
+   "padroes_injecao": []
+  }
+ },
+ "agente": {
+  "faq": {
+   "resposta": "No mercado livre, você negocia a compra da energia elétrica diretamente com a gente, a Varejista Demo. Mas a parte da sua conta que se refere à distribuição (o uso da rede elétrica), encargos e impostos continua sendo cobrada pela distribuidora local, como sempre foi. Por isso, só a parcela da energia, que é cerca de um terço da sua conta, pode ter o preço negociado e mudar. As outras partes não mudam. Isso está previsto no Decreto nº 13.097/2026.",
+   "fontes": [
+    "Brasil Energia, 05/10/2026",
+    "Decreto nº 13.097/2026"
+   ],
+   "confianca": 1,
+   "escalar_humano": false,
+   "motivo_escalonamento": null,
+   "alerta_injecao": false,
+   "proxima_acao": "nenhuma",
+   "modo": "llm",
+   "trechos": [
+    {
+     "pergunta": "Por que minha conta veio mais cara este mês?",
+     "score": 0.42
+    },
+    {
+     "pergunta": "Quanto tempo leva para migrar?",
+     "score": 0.33
+    },
+    {
+     "pergunta": "Vou economizar 30% (ou 25%) na conta inteira?",
+     "score": 0.33
+    }
+   ]
+  },
+  "humano": {
+   "resposta": "Claro! Vou te passar agora para uma pessoa da nossa equipe, com o resumo da nossa conversa.",
+   "fontes": [],
+   "confianca": 1,
+   "escalar_humano": true,
+   "motivo_escalonamento": "pedido_do_cliente",
+   "alerta_injecao": false,
+   "proxima_acao": "transferir_humano",
+   "modo": "offline",
+   "trechos": [
+    {
+     "pergunta": "Quero falar com uma pessoa.",
+     "score": 0.67
+    }
+   ]
+  }
+ }
+}
