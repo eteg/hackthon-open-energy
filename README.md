@@ -39,9 +39,11 @@ Código: `src/lib/supabase/` (clientes do navegador e do servidor), `src/lib/ses
 
 | Grupo | Rotas |
 | --- | --- |
-| Site do consumidor (mobile first) | `/`, `/fatura`, `/fatura/conferir`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]` |
+| Site do consumidor (mobile first) | `/fatura` (entrada vinda da LP), `/fatura/conferir`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]` |
 | Console do fornecedor | `/console`, `/console/casos/[id]` (fila e aprovação do ato 1) |
 | Login do fornecedor | `/varejista/entrar` |
+
+A home é a landing page [trevolt.vercel.app](https://trevolt.vercel.app/) (`src/lib/links.ts`): a raiz `/` do app redireciona para ela, todo logo e seta de início levam para ela (o console e o login do fornecedor, para a página de fornecedores da LP) e a pessoa entra no app pelo botão da LP, que abre `/fatura`.
 
 O consumidor contrata sem conta e sem códigos de verificação: o caso fica guardado no navegador. Depois do aceite ele recebe um **link de acompanhamento** (`/caso/<identificador longo>`), que mostra a etapa real do caso (a que o fornecedor altera no console) e se atualiza sozinho; é por esse link que ele volta, de qualquer aparelho. O aceite em si usa estado simulado.
 
