@@ -30,7 +30,7 @@ O Supabase cuida do **login** (Supabase Auth, e-mail e senha) e guarda o **estad
 
 - **Quem acessa as tabelas**: só o servidor (rota `/api`), com a chave secreta. Todas as tabelas têm RLS ligado e nenhuma policy, então a chave publicável do navegador serve só para o login.
 - **Perfil**: vem do `app_metadata.perfil` do usuário (`varejista` ou `consumidor`), que só a chave secreta altera. Com o login configurado, `GET /casos`, `POST /casos/{id}/aprovar` e `GET /observabilidade` exigem sessão de fornecedor (401 sem login, 403 para consumidor), também quando a chamada segue para o n8n.
-- **Schema**: `supabase/migrations/`. Casos de exemplo: `supabase/seed.sql` (gerado das fixtures). Para aplicar num projeto: `npx supabase login`, `npx supabase link --project-ref <ref>` e `npx supabase db push --include-seed`.
+- **Schema**: `supabase/migrations/`. Casos de exemplo: `supabase/seed.sql` (gerado das fixtures). O mesmo banco também tem o schema da plataforma n8n (`..._plataforma_n8n.sql`, cópia do `schema.sql` do pacote `eteg-n8n-supabase`: tabelas no singular, como `caso`, `fatura`, `evento`, com máquina de estados e log com cadeia de hashes). As tabelas no plural (`casos`, `faturas`, `varejista`, `evidencias`) são as do modo demonstração deste front. Para aplicar num projeto: `npx supabase login`, `npx supabase link --project-ref <ref>` e `npx supabase db push --include-seed`.
 - **Sem as variáveis**: o app continua em modo demonstração, com os dados em memória (somem ao reiniciar) e sem login.
 
 Código: `src/lib/supabase/` (clientes do navegador e do servidor), `src/lib/sessao.ts` (hook `useSessao`), `src/lib/demo-api/repositorio*.ts` (estado em memória ou no Supabase).
