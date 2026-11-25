@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Camera, LoaderCircle } from "lucide-react";
 import { SiteShell } from "@/components/trevolt/site-shell";
@@ -44,8 +43,8 @@ function classificar(e: unknown): Falha {
   if (status === 415) return { titulo: "Não consegui ler essa imagem", texto: "Esse formato não funciona. Envie JPG, PNG ou PDF." };
   if (status === 413) return { titulo: "Esse arquivo é grande demais", texto: "O limite é 5 MB. Tire outra foto, mais perto da conta, ou envie o PDF." };
   if (status === 422) return { titulo: "Esse PDF tem senha", texto: msg };
-  if (status === 503) return { titulo: "A leitura da fatura está indisponível agora", texto: "Você pode digitar os dados da conta ou usar uma fatura de exemplo.", semChave: true };
-  if (status === 502) return { titulo: "Não consegui ler agora", texto: "Tente de novo, com outra foto, ou digite os dados." };
+  if (status === 503) return { titulo: "A leitura da fatura está indisponível agora", texto: "Você pode usar uma fatura de exemplo.", semChave: true };
+  if (status === 502) return { titulo: "Não consegui ler agora", texto: "Tente de novo, com outra foto, ou use outra fatura." };
   return { titulo: "Não deu certo", texto: msg };
 }
 
@@ -129,9 +128,6 @@ export function EnviarFatura() {
             <Button size="lg" onClick={trocarArquivo}>
               <Camera aria-hidden="true" /> Tirar outra foto
             </Button>
-            <Button asChild variant="link" className="justify-center text-[13px]">
-              <Link href="/fatura/digitar">Digitar os dados</Link>
-            </Button>
           </>
         }
       >
@@ -188,9 +184,6 @@ export function EnviarFatura() {
           <Button size="lg" disabled={!arquivo || !aceito || lendo} onClick={enviar}>
             {lendo && <LoaderCircle className="animate-spin" aria-hidden="true" />}
             {lendo ? "Lendo…" : "Ler minha fatura"}
-          </Button>
-          <Button asChild variant="link" className="justify-center text-[13px]">
-            <Link href="/fatura/digitar">Não tenho a conta agora, digitar os dados</Link>
           </Button>
         </>
       }

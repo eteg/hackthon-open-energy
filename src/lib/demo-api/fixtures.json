@@ -124,16 +124,6 @@
    "Encargo fixo na baixa tensão (CP 16/2026)"
   ]
  },
- "observabilidade": {
-  "chamadas": 0,
-  "latencia_media_ms": 0,
-  "tokens_entrada": 0,
-  "tokens_saida": 0,
-  "custo_total_usd": 0,
-  "taxa_escalonamento": 0,
-  "injecoes_bloqueadas": 0,
-  "ultimas": []
- },
  "casos": [
   {
    "id": "caso-018",
@@ -1445,51 +1435,6 @@
    },
    "alerta_injecao": false,
    "padroes_injecao": []
-  }
- },
- "agente": {
-  "faq": {
-   "resposta": "No mercado livre, você negocia a compra da energia elétrica diretamente com a gente, a Varejista Demo. Mas a parte da sua conta que se refere à distribuição (o uso da rede elétrica), encargos e impostos continua sendo cobrada pela distribuidora local, como sempre foi. Por isso, só a parcela da energia, que é cerca de um terço da sua conta, pode ter o preço negociado e mudar. As outras partes não mudam. Isso está previsto no Decreto nº 13.097/2026.",
-   "fontes": [
-    "Brasil Energia, 05/10/2026",
-    "Decreto nº 13.097/2026"
-   ],
-   "confianca": 1,
-   "escalar_humano": false,
-   "motivo_escalonamento": null,
-   "alerta_injecao": false,
-   "proxima_acao": "nenhuma",
-   "modo": "llm",
-   "trechos": [
-    {
-     "pergunta": "Por que minha conta veio mais cara este mês?",
-     "score": 0.42
-    },
-    {
-     "pergunta": "Quanto tempo leva para migrar?",
-     "score": 0.33
-    },
-    {
-     "pergunta": "Vou economizar 30% (ou 25%) na conta inteira?",
-     "score": 0.33
-    }
-   ]
-  },
-  "humano": {
-   "resposta": "Claro! Vou te passar agora para uma pessoa da nossa equipe, com o resumo da nossa conversa.",
-   "fontes": [],
-   "confianca": 1,
-   "escalar_humano": true,
-   "motivo_escalonamento": "pedido_do_cliente",
-   "alerta_injecao": false,
-   "proxima_acao": "transferir_humano",
-   "modo": "offline",
-   "trechos": [
-    {
-     "pergunta": "Quero falar com uma pessoa.",
-     "score": 0.67
-    }
-   ]
   }
  }
 }

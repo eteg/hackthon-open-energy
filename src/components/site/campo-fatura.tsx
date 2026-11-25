@@ -31,7 +31,7 @@ export type EstadoCampo = "lido" | "faltou" | "neutro" | "limpo";
 const ROTULO_CURTO: Record<string, string> = { total_rs: "Conta do mês", consumo_kwh: "Consumo médio" };
 
 /**
- * Campo da conferência/digitação. "Onde achar?" aparece ao lado do rótulo (digitar) ou do campo (leitura incompleta).
+ * Campo da conferência. "Onde achar?" aparece ao lado do campo quando a leitura não o trouxe.
  */
 export function CampoFatura({
   def,

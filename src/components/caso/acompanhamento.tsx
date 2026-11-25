@@ -1,152 +1,172 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
+import { Copy, LoaderCircle } from "lucide-react";
+import { toast } from "sonner";
 import { SiteShell } from "@/components/trevolt/site-shell";
-import { DemoBanner } from "@/components/trevolt/demo-banner";
 import { LinhaDoTempo, type EtapaTempo } from "@/components/trevolt/linha-do-tempo";
-import { SemCaso } from "@/components/caso/sem-caso";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useCasoDemo, type EtapaCaso } from "@/lib/demo/store";
+import { api, ErroApi } from "@/lib/api";
+import { useCasoDemo } from "@/lib/demo/store";
+import { formatarData } from "@/lib/utils";
+import type { CasoPublico, Etapa } from "@/lib/types";
 
-const PROXIMA: Partial<Record<EtapaCaso, EtapaCaso>> = { ccv_aguardando: "distribuidora_validando", distribuidora_validando: "em_vigor" };
+const ATUALIZA_A_CADA_MS = 15_000;
 
-function linha(etapa: EtapaCaso): EtapaTempo[] {
-  const n = etapa === "ccv_aguardando" ? 1 : etapa === "distribuidora_validando" ? 3 : 5;
-  const t = (i: number, titulo: string, atual: string, esperando = "Aguardando"): EtapaTempo => ({
+/** Quantas etapas da linha do tempo já foram concluídas, pela etapa REAL do caso (a mesma que o fornecedor mexe no console). */
+const CONCLUIDAS: Partial<Record<Etapa, number>> = { aguardando_aprovacao: 1, escalado_humano: 1, documentacao: 2, formalizado: 6 };
+
+function linha(concluidas: number): EtapaTempo[] {
+  const t = (i: number, titulo: string, atual: string): EtapaTempo => ({
     titulo,
-    estado: i < n ? "feito" : i === n ? "atual" : "pendente",
-    rotulo: i < n ? "Concluído" : i === n ? atual : esperando,
+    estado: i < concluidas ? "feito" : i === concluidas ? "atual" : "pendente",
+    rotulo: i < concluidas ? "Concluído" : i === concluidas ? atual : "Aguardando",
   });
   return [
     t(0, "Aceite assinado", ""),
-    t(1, "Assinatura do CCV (e-mail da CCEE)", "Aguardando você"),
-    t(2, "Solicitação da migração à CCEE", "Em andamento"),
-    t(3, "Validação da distribuidora (até 5 dias úteis)", "Em andamento"),
-    t(4, "Migração em vigor", "Em vigor"),
+    t(1, "Conferência pelo fornecedor", "Em andamento"),
+    t(2, "Assinatura do CCV (e-mail da CCEE)", "Aguardando você"),
+    t(3, "Solicitação da migração à CCEE", "Em andamento"),
+    t(4, "Validação da distribuidora (até 5 dias úteis)", "Em andamento"),
+    t(5, "Migração em vigor", "Em vigor"),
   ];
 }
 
+const TITULO: Record<Etapa, string> = {
+  simulado: "Seu pedido ainda não foi concluído",
+  ciencia_pendente: "Seu pedido ainda não foi concluído",
+  aguardando_aprovacao: "O fornecedor está conferindo o seu pedido",
+  escalado_humano: "Um especialista da Trevolt vai falar com você",
+  documentacao: "Falta a sua assinatura no contrato da CCEE",
+  formalizado: "Sua migração foi formalizada",
+};
+
+type Estado = { tipo: "carregando" } | { tipo: "ok"; caso: CasoPublico } | { tipo: "nao_encontrado" } | { tipo: "erro" };
+
+/** Acompanhamento pelo link: o andamento vem do servidor (nada fica só neste navegador) e atualiza sozinho. */
 export function Acompanhamento({ id }: { id: string }) {
-  const { caso, atualizar } = useCasoDemo();
+  const { caso: local } = useCasoDemo();
+  const [estado, setEstado] = useState<Estado>({ tipo: "carregando" });
   const [reenvio, setReenvio] = useState(false);
-  const fornecedor = caso.compartilhaDados?.fornecedor ?? "Fornecedor Alfa";
-  const etapa = caso.etapa;
-  const ativo = etapa === "ccv_aguardando" || etapa === "distribuidora_validando" || etapa === "em_vigor";
-  const avisos = caso.canalAvisos ?? ["whatsapp"];
-  const email = caso.representante?.email ?? "nome@empresa.com.br";
 
-  const simular = PROXIMA[etapa] && (
-    <DemoBanner>
-      <Button variant="link" className="h-auto p-0 text-xs text-[#6b4400] underline" onClick={() => atualizar({ etapa: PROXIMA[etapa]! })}>
-        Simular próxima etapa
-      </Button>
-    </DemoBanner>
-  );
+  const carregar = useCallback(async () => {
+    try {
+      setEstado({ tipo: "ok", caso: await api.acompanharCaso(id) });
+    } catch (e) {
+      // Falha ao atualizar não apaga o que já está na tela: só a primeira carga vira erro.
+      setEstado((atual) => (atual.tipo === "ok" ? atual : e instanceof ErroApi && e.status === 404 ? { tipo: "nao_encontrado" } : { tipo: "erro" }));
+    }
+  }, [id]);
 
-  const titulo =
-    etapa === "ccv_aguardando"
-      ? "Falta a sua assinatura no contrato da CCEE"
-      : etapa === "distribuidora_validando"
-        ? "A distribuidora está validando"
-        : "Sua migração está em vigor";
+  useEffect(() => {
+    void carregar();
+    const t = setInterval(() => void carregar(), ATUALIZA_A_CADA_MS);
+    return () => clearInterval(t);
+  }, [carregar]);
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copiado.");
+    } catch {
+      toast.error("Não consegui copiar. Selecione o endereço na barra do navegador.");
+    }
+  }
+
+  if (estado.tipo !== "ok") {
+    return (
+      <SiteShell topo={<span />}>
+        {estado.tipo === "carregando" && (
+          <p role="status" className="flex items-center gap-2 py-10 text-sm text-muted-foreground">
+            <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> Buscando o andamento…
+          </p>
+        )}
+        {estado.tipo === "nao_encontrado" && (
+          <>
+            <h1 className="text-[26px] leading-[1.12] font-bold">Não encontramos essa solicitação</h1>
+            <p className="text-sm text-muted-foreground">Confira se o endereço está completo, do jeito que foi enviado para você.</p>
+            <Button asChild size="lg" variant="outline"><Link href="/">Voltar ao início</Link></Button>
+          </>
+        )}
+        {estado.tipo === "erro" && (
+          <>
+            <h1 className="text-[26px] leading-[1.12] font-bold">Não consegui buscar o andamento agora</h1>
+            <p className="text-sm text-muted-foreground">Sua solicitação continua de pé. Tente de novo em instantes.</p>
+            <Button size="lg" onClick={() => { setEstado({ tipo: "carregando" }); void carregar(); }}>Tentar de novo</Button>
+          </>
+        )}
+      </SiteShell>
+    );
+  }
+
+  const { caso } = estado;
+  const concluidas = CONCLUIDAS[caso.etapa];
+  const email = local.representante?.email;
 
   return (
     <SiteShell
       topo={<span />}
-      acao={
-        ativo && (
-          <>
-            {etapa === "ccv_aguardando" ? (
-              <Button size="lg" onClick={() => setReenvio(true)}>Não recebi o e-mail</Button>
-            ) : (
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/assistente">Falar com o {fornecedor}</Link>
-              </Button>
-            )}
-            {etapa === "ccv_aguardando" ? (
-              <Link href="/assistente" className="flex min-h-11 items-center justify-center text-[13px] font-semibold text-primary underline underline-offset-4">
-                Falar com o {fornecedor}
-              </Link>
-            ) : (
-              <Link href="/assistente" className="flex min-h-11 items-center justify-center text-[13px] font-semibold text-primary underline underline-offset-4">
-                Abrir uma reclamação
-              </Link>
-            )}
-          </>
-        )
-      }
+      acao={caso.etapa === "documentacao" && <Button size="lg" onClick={() => setReenvio(true)}>Não recebi o e-mail</Button>}
     >
-      {!ativo ? (
-        <SemCaso texto="Este caso ainda não chegou ao acompanhamento." />
-      ) : (
+      <div>
+        <div className="text-xs font-bold tracking-[.08em] text-muted-foreground uppercase">Seu caso #{caso.numero}</div>
+        <h1 className="mt-1 text-[26px] leading-[1.12] font-bold">{TITULO[caso.etapa]}</h1>
+      </div>
+
+      {caso.etapa === "documentacao" && (
+        <div className="rounded-xl border-2 border-primary bg-card p-3.5">
+          <div className="font-display text-[17px] font-bold">O que fazer agora</div>
+          <p className="mt-1 text-sm leading-normal">
+            Procure o e-mail da CCEE{email ? <> enviado para <b>{email}</b></> : null} e assine o CCV por lá. Veja também o spam.
+          </p>
+        </div>
+      )}
+      {caso.etapa === "aguardando_aprovacao" && (
+        <p className="text-sm leading-normal text-muted-foreground">
+          Recebemos o seu aceite{caso.criado_em ? ` em ${formatarData(caso.criado_em)}` : ""}. Assim que o fornecedor aprovar, a CCEE envia o contrato (CCV) para o seu e-mail.
+        </p>
+      )}
+      {caso.etapa === "escalado_humano" && (
+        <p className="text-sm leading-normal text-muted-foreground">Seu caso precisa de uma pessoa. Quem for te atender já vê tudo o que você enviou.</p>
+      )}
+      {(caso.etapa === "simulado" || caso.etapa === "ciencia_pendente") && (
         <>
-          <div>
-            <div className="text-xs font-bold tracking-[.08em] text-muted-foreground uppercase">Seu caso #{id}</div>
-            <h1 className="mt-1 text-[26px] leading-[1.12] font-bold">{titulo}</h1>
-          </div>
-          {etapa === "ccv_aguardando" && (
-            <div className="rounded-xl border-2 border-primary bg-card p-3.5">
-              <div className="font-display text-[17px] font-bold">O que fazer agora</div>
-              <p className="mt-1 text-sm leading-normal">
-                Procure o e-mail da CCEE enviado para <b>{email}</b> e assine o CCV por lá. Veja também o spam.
-              </p>
-            </div>
-          )}
-          {reenvio && (
-            <Alert role="status">
-              <AlertDescription>Pedimos um novo envio à CCEE para {email}. Pode levar alguns minutos. Veja também o spam.</AlertDescription>
-            </Alert>
-          )}
-          <div className="rounded-xl border bg-card p-4">
-            <LinhaDoTempo etapas={linha(etapa)} />
-          </div>
-          {etapa === "ccv_aguardando" && (
-            <Alert variant="warning">
-              <AlertDescription className="text-xs">
-                Se a assinatura demorar, a migração pode começar só no mês seguinte. Lembramos você em 2 e 5 dias.
-              </AlertDescription>
-            </Alert>
-          )}
-          {etapa === "distribuidora_validando" && (
-            <div className="rounded-xl border-2 border-primary bg-card p-3.5">
-              <div className="font-display text-[17px] font-bold">Previsão de início: janeiro/2028</div>
-              <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">
-                Se a validação passar do corte de 16/12/2027, pode ficar para o mês seguinte.
-              </p>
-            </div>
-          )}
-          {etapa === "em_vigor" && (
-            <p className="text-sm text-muted-foreground">
-              A economia realizada só aparece aqui depois de confirmada nas suas faturas.
-            </p>
-          )}
-          {etapa !== "ccv_aguardando" && (
-            <RadioGroup
-              value={avisos.includes("email") && !avisos.includes("whatsapp") ? "email" : "whatsapp"}
-              onValueChange={(v) => atualizar({ canalAvisos: [v as "whatsapp" | "email"] })}
-              aria-labelledby="lg-avisos"
-              className="gap-0"
-            >
-              <div id="lg-avisos" className="text-[13px] font-semibold">Receber avisos por</div>
-              <div className="flex min-h-11 items-center gap-2.5">
-                <RadioGroupItem id="av-wa" value="whatsapp" />
-                <Label htmlFor="av-wa" className="text-sm font-normal">WhatsApp</Label>
-              </div>
-              <div className="flex min-h-11 items-center gap-2.5">
-                <RadioGroupItem id="av-em" value="email" />
-                <Label htmlFor="av-em" className="text-sm font-normal">E-mail</Label>
-              </div>
-              <p className="text-xs leading-[1.4] text-muted-foreground">Para voltar a esta página, enviamos um link por e-mail ou SMS.</p>
-            </RadioGroup>
-          )}
-          {simular}
-          <DemoBanner>Etapas e avisos simulados; no console, o operador faz os atos de verdade.</DemoBanner>
+          <p className="text-sm leading-normal text-muted-foreground">Falta concluir a ciência dos riscos e o aceite. Você pode refazer o caminho a qualquer momento.</p>
+          <Button asChild size="lg"><Link href="/fatura">Continuar</Link></Button>
         </>
       )}
+      {reenvio && (
+        <Alert role="status">
+          <AlertDescription>Pedimos um novo envio à CCEE{email ? ` para ${email}` : ""}. Pode levar alguns minutos. Veja também o spam.</AlertDescription>
+        </Alert>
+      )}
+
+      {concluidas !== undefined && (
+        <div className="rounded-xl border bg-card p-4">
+          <LinhaDoTempo etapas={linha(concluidas)} />
+        </div>
+      )}
+      {caso.etapa === "documentacao" && (
+        <Alert variant="warning">
+          <AlertDescription className="text-xs">Se a assinatura demorar, a migração pode começar só no mês seguinte.</AlertDescription>
+        </Alert>
+      )}
+      {caso.etapa === "formalizado" && (
+        <p className="text-sm text-muted-foreground">A economia realizada só aparece aqui depois de confirmada nas suas faturas.</p>
+      )}
+
+      <div className="rounded-xl border bg-card p-3.5">
+        <div className="text-[13px] font-semibold">Guarde este link</div>
+        <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+          É por ele que você volta aqui para ver o andamento, de qualquer aparelho. Quem tiver o link vê o andamento do caso: não compartilhe.
+        </p>
+        <Button variant="outline" size="sm" className="mt-2" onClick={copiar}>
+          <Copy aria-hidden="true" /> Copiar link
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">Esta página se atualiza sozinha.</p>
     </SiteShell>
   );
 }

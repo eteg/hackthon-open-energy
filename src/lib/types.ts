@@ -175,28 +175,15 @@ export type Caso = {
   ciencia?: { itens: string[]; registrada_em: string; hash: string };
   aprovado_por?: { operador: string; em: string };
   recibo_id?: string;
+  /** Identificador longo e aleatório do link de acompanhamento do consumidor (não é o `id` do console). */
+  acompanhamento_id?: string;
 };
 
-// ---------- Agente ----------
-export const AgenteSaidaSchema = z.object({
-  resposta: z.string(),
-  fontes: z.array(z.string()),
-  confianca: z.number().min(0).max(1),
-  escalar_humano: z.boolean(),
-  motivo_escalonamento: z.string().nullable(),
-  alerta_injecao: z.boolean(),
-  proxima_acao: z.enum([
-    "explicar_fatura",
-    "simular",
-    "checklist",
-    "coletar_documento",
-    "ciencia_riscos",
-    "transferir_humano",
-    "nenhuma",
-  ]),
-});
-export type AgenteSaida = z.infer<typeof AgenteSaidaSchema>;
-export type MensagemChat = { papel: "cliente" | "agente"; texto: string };
-
-/** Resposta do agente de atendimento (POST /agente): saída tipada + metadados. */
-export type RespostaAgente = AgenteSaida & { modo: "llm" | "offline"; trechos: { pergunta: string; score: number }[] };
+/** O que o consumidor vê ao abrir o link de acompanhamento: só o necessário, sem dados de outras pessoas nem a ciência. */
+export type CasoPublico = {
+  numero: string;
+  etapa: Etapa;
+  criado_em: string;
+  aprovado_em: string | null;
+  oferta_id: string | null;
+};

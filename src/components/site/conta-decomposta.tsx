@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SiteShell } from "@/components/trevolt/site-shell";
 import { Button } from "@/components/ui/button";
@@ -47,11 +46,7 @@ export function ContaDecomposta() {
       passo={{ n: 3 }}
      
       acao={
-        foraDoEscopo ? (
-          <Button asChild size="lg">
-            <Link href="/assistente">Falar com uma pessoa</Link>
-          </Button>
-        ) : (
+        foraDoEscopo ? undefined : (
           <Button
             size="lg"
             onClick={() => {

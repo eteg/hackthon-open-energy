@@ -6,12 +6,11 @@
  */
 import { useCallback, useSyncExternalStore } from "react";
 
-export type Perfil = "consumidor" | "varejista";
+export type Perfil = "varejista";
 export type Sessao = { email: string; nome: string; perfil: Perfil };
 
 export const USUARIOS_MOCK: (Sessao & { senha: string })[] = [
   { email: "varejista@gmail.com", senha: "Teste123", nome: "Marina Alves", perfil: "varejista" },
-  { email: "consumidor@gmail.com", senha: "Teste123", nome: "Pessoa de Teste", perfil: "consumidor" },
 ];
 
 /** Devolve a sessão se o e-mail (sem diferenciar maiúsculas) e a senha (exata) conferem; senão `null`. */
@@ -58,11 +57,10 @@ export function useSessao() {
   );
   /**
    * Tenta entrar; devolve a sessão (e a grava) ou `null` se e-mail/senha não conferem.
-   * Com `perfil`, só aceita esse perfil (ex.: o portal do fornecedor recusa o consumidor SEM gravar nada).
    */
-  const entrar = useCallback((email: string, senha: string, perfil?: Perfil) => {
+  const entrar = useCallback((email: string, senha: string) => {
     const s = autenticar(email, senha);
-    if (!s || (perfil && s.perfil !== perfil)) return null;
+    if (!s) return null;
     gravar(s);
     return s;
   }, []);

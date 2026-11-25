@@ -51,10 +51,6 @@ export function camposParaPreencher(ausentes: string[]): CampoDef[] {
  */
 const DIVISAO_PADRAO = { energia_te_rs: 0.32, distribuicao_tusd_rs: 0.28, bandeira_rs: 0.04, cip_rs: 0.08 } as const;
 
-const UF_POR_DISTRIBUIDORA: [RegExp, string][] = [
-  [/baian/i, "BA"], [/cearen/i, "CE"], [/gaúch|gaucha/i, "RS"], [/mineir/i, "MG"], [/paranaens/i, "PR"], [/paulist/i, "SP"],
-];
-
 export type Montagem = { fatura: FaturaParcial; assumido: string[]; derivouComponentes: boolean };
 
 /**
@@ -62,9 +58,8 @@ export type Montagem = { fatura: FaturaParcial; assumido: string[]; derivouCompo
  * - titular → "Titular não informado"; segmento → "Não informado"
  * - histórico de 12 meses → 12 × o consumo informado
  * - componentes da conta → divisão padrão sobre o total (DIVISAO_PADRAO); desconto de benefício → 0
- * - `semConta` (S3c): também classe "comercial", subgrupo B3, tensão 220 V, mês atual (`mesAtual`, AAAA-MM, vem do cliente: `new Date()` não pode rodar no prerender) e UF pela distribuidora (SP se desconhecida)
  */
-export function completarComPadroes(base: FaturaParcial, semConta = false, mesAtual = ""): Montagem {
+export function completarComPadroes(base: FaturaParcial): Montagem {
   const f = structuredClone(base) as Record<string, unknown>;
   const assumido: string[] = [];
   const faltou = (c: string) => {
@@ -78,16 +73,6 @@ export function completarComPadroes(base: FaturaParcial, semConta = false, mesAt
 
   if (faltou("titular")) usar("titular", "Titular não informado", "titular não informado");
   if (faltou("segmento")) usar("segmento", "Não informado", "segmento não informado");
-  if (semConta) {
-    if (faltou("classe")) usar("classe", "comercial", "classe comercial");
-    if (faltou("subgrupo")) usar("subgrupo", "B3", "subgrupo B3");
-    if (faltou("tensao_v")) usar("tensao_v", 220, "tensão de 220 V");
-    if (faltou("mes_referencia") && mesAtual) usar("mes_referencia", mesAtual, "mês de referência = mês atual");
-    if (faltou("uf")) {
-      const uf = UF_POR_DISTRIBUIDORA.find(([re]) => re.test(String(f.distribuidora ?? "")))?.[1] ?? "SP";
-      usar("uf", uf, `UF ${uf}`);
-    }
-  }
   const consumo = f.consumo_kwh;
   if (faltou("historico_12m_kwh") && typeof consumo === "number") {
     usar("historico_12m_kwh", Array<number>(12).fill(consumo), "histórico de 12 meses igual ao consumo informado");

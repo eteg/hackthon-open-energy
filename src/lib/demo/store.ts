@@ -5,9 +5,8 @@
  */
 import { useCallback, useSyncExternalStore } from "react";
 
-export type EtapaCaso =
-  | "inicio" | "fatura" | "conferencia" | "conta" | "ofertas" | "recibo" | "ciencia" | "dados" | "aceite"
-  | "ccv_aguardando" | "distribuidora_validando" | "em_vigor" | "devolvido" | "rejeitado";
+/** Onde o consumidor está NO FLUXO deste navegador. O andamento depois do aceite vem do servidor (link de acompanhamento). */
+export type EtapaCaso = "inicio" | "fatura" | "conferencia" | "conta" | "ofertas" | "recibo" | "ciencia" | "aceite" | "acompanhamento";
 
 export type CasoDemo = {
   id: string;
@@ -19,7 +18,8 @@ export type CasoDemo = {
   compartilhaDados?: { fornecedor: string; prazo: "30 dias" | "90 dias" | "180 dias" };
   representante?: { nome: string; cpf: string; email: string; celular: string };
   aceiteEm?: string;
-  canalAvisos?: ("whatsapp" | "email")[];
+  /** Identificador do link de acompanhamento, devolvido pelo servidor ao criar o caso (em /ciencia). */
+  acompanhamentoId?: string;
 };
 
 const CHAVE = "trevolt:caso";

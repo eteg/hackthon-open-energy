@@ -12,17 +12,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSessao } from "@/lib/auth-mock";
 import { useCasoDemo } from "@/lib/demo/store";
 
 /** Quem assina pela empresa + aceite comercial, numa tela só. Sem código de verificação. */
 export default function AceitePage() {
   const router = useRouter();
   const { caso, atualizar } = useCasoDemo();
-  const { sessao } = useSessao();
   const [nome, setNome] = useState(caso.representante?.nome ?? "");
   const [cpf, setCpf] = useState(caso.representante?.cpf ?? "");
-  const [email, setEmail] = useState(caso.representante?.email ?? (sessao?.perfil === "consumidor" ? sessao.email : ""));
+  const [email, setEmail] = useState(caso.representante?.email ?? "");
   const [celular, setCelular] = useState(caso.representante?.celular ?? "");
   const [aceito, setAceito] = useState(false);
   const [tocou, setTocou] = useState<Record<string, boolean>>({});
@@ -46,9 +44,9 @@ export default function AceitePage() {
     atualizar({
       representante: { nome: nome.trim(), cpf, email: email.trim(), celular },
       aceiteEm: new Date().toISOString(),
-      etapa: "ccv_aguardando",
+      etapa: "acompanhamento",
     });
-    router.push(`/caso/${caso.id}`);
+    router.push(`/caso/${caso.acompanhamentoId}`);
   }
 
   return (
@@ -62,7 +60,7 @@ export default function AceitePage() {
         </Button>
       }
     >
-      {!caso.cienciaIds?.length ? (
+      {!caso.cienciaIds?.length || !caso.acompanhamentoId ? (
         <SemCaso texto="Falta a ciência dos riscos antes do aceite." />
       ) : (
         <>

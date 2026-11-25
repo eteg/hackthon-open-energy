@@ -2,22 +2,28 @@ import "server-only";
 /**
  * Modo demonstração: responde no lugar do n8n quando N8N_BASE_URL não está definido.
  * As respostas são FIXAS (capturadas do serviço anterior) e só o estado mínimo do fluxo vive em memória
- * (faturas confirmadas, casos, cadastro da empresa). NÃO calcula nada: faturas enviadas por arquivo
+ * (faturas confirmadas e casos). NÃO calcula nada: faturas enviadas por arquivo
  * simulam com os números da fatura de exemplo fat-001. Nenhuma regra de negócio mora aqui.
  */
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { validarFaturaCompleta } from "@/lib/fatura-campos";
-import type { Caso, Fatura, Simulacao } from "@/lib/types";
-import { VarejistaSchema, type Varejista } from "@/lib/varejista";
+import type { Caso, CasoPublico, Fatura, Simulacao } from "@/lib/types";
 import fx from "./fixtures.json";
 
 export type RespostaDemo = { status: number; body: unknown };
 export type PedidoDemo = { metodo: string; caminho: string; json?: unknown; arquivo?: boolean };
 
-type Estado = { faturas: Fatura[]; casos: Caso[]; varejista: Varejista | null };
+type Estado = { faturas: Fatura[]; casos: Caso[] };
 const g = globalThis as unknown as { __trevoltDemo?: Estado };
-const estado: Estado = (g.__trevoltDemo ??= { faturas: [], casos: structuredClone(fx.casos) as Caso[], varejista: null });
+const estado: Estado = (g.__trevoltDemo ??= { faturas: [], casos: structuredClone(fx.casos) as Caso[] });
+
+/** O `acompanhamento_id` é o segredo do link do consumidor: só quem CRIA o caso o recebe. Listas e telas do console nunca o expõem. */
+const semSegredo = (c: Caso): Caso => {
+  const { acompanhamento_id: _segredo, ...resto } = c;
+  void _segredo;
+  return resto;
+};
 
 const ok = (body: unknown, status = 200): RespostaDemo => ({ status, body });
 const erro = (mensagem: string, status: number, extra: object = {}): RespostaDemo => ({ status, body: { erro: mensagem, ...extra } });
@@ -68,16 +74,8 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
   }
 
   if (rota === "GET regras") return ok(fx.regras);
-  if (rota === "GET observabilidade") return ok(fx.observabilidade);
-
-  if (rota === "POST agente") {
-    const msgs = (corpo.mensagens as { papel: string; texto: string }[] | undefined) ?? [];
-    const ultima = [...msgs].reverse().find((m) => m.papel === "cliente")?.texto ?? "";
-    return ok(/pessoa|humano|atendente|especialista/i.test(ultima) ? fx.agente.humano : fx.agente.faq);
-  }
-
   if (rota === "GET casos") {
-    const casos = [...estado.casos].sort((a, b) => b.criado_em.localeCompare(a.criado_em));
+    const casos = estado.casos.map(semSegredo).sort((a, b) => b.criado_em.localeCompare(a.criado_em));
     const por = Object.fromEntries(["simulado", "ciencia_pendente", "aguardando_aprovacao", "documentacao", "formalizado", "escalado_humano"].map((e) => [e, casos.filter((c) => c.etapa === e).length]));
     return ok({
       casos,
@@ -119,9 +117,25 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
       alerta_beneficio: fatura.beneficios.length > 0,
       ciencia: { itens: cienciaIds, registrada_em: agora, hash },
       recibo_id: sim.recibo_id,
+      acompanhamento_id: randomBytes(16).toString("base64url"), // 22 caracteres imprevisíveis: é o "segredo" do link
     };
     estado.casos.push(caso);
     return ok(caso, 201);
+  }
+
+  // Consulta pública pelo link: só o identificador longo vale (o `id` do console, "caso-019", não abre nada).
+  const publico = caminho.match(/^casos\/([\w-]{16,64})$/);
+  if (metodo === "GET" && publico) {
+    const caso = estado.casos.find((c) => c.acompanhamento_id === publico[1]);
+    if (!caso) return erro("Solicitação não encontrada", 404);
+    const visao: CasoPublico = {
+      numero: caso.id.replace(/^caso-/, ""),
+      etapa: caso.etapa,
+      criado_em: caso.criado_em,
+      aprovado_em: caso.aprovado_por?.em ?? null,
+      oferta_id: caso.oferta_id,
+    };
+    return ok(visao);
   }
 
   const aprovar = caminho.match(/^casos\/([^/]+)\/aprovar$/);
@@ -134,20 +148,7 @@ export async function demoResponder({ metodo, caminho, json, arquivo }: PedidoDe
     caso.etapa = "documentacao";
     caso.proxima_acao = "Coletar procuração e documentos da unidade";
     caso.aprovado_por = { operador: b.data.operador, em: new Date().toISOString() };
-    return ok(caso);
-  }
-
-  if (rota === "GET varejista") return ok({ varejista: estado.varejista });
-
-  if (rota === "PUT varejista") {
-    const p = VarejistaSchema.safeParse(json ?? null);
-    if (!p.success) return erro("Revise os campos destacados", 400, { campos: z.flattenError(p.error).fieldErrors });
-    const { declaracao, ...dados } = p.data;
-    const anterior = estado.varejista;
-    const agora = new Date().toISOString();
-    const hash = createHash("sha256").update(JSON.stringify({ ...dados, declaracao, aceita_em: agora })).digest("hex");
-    estado.varejista = { ...dados, cadastrado_em: anterior?.cadastrado_em ?? agora, atualizado_em: agora, declaracao: { aceita_em: agora, hash } };
-    return ok(estado.varejista, anterior ? 200 : 201);
+    return ok(semSegredo(caso));
   }
 
   return erro("Rota não encontrada", 404);

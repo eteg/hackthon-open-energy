@@ -1,6 +1,6 @@
 # Trevolt · Energia do jeito combinado
 
-Hackathon ETEG 2026. Front do MVP de contratação de energia no mercado livre de baixa tensão (abertura em 25/11/2027): envio da fatura, simulação honesta, ciência de riscos, aceite, acompanhamento, console do fornecedor e portal do fornecedor. Uma plataforma ETEG.
+Hackathon ETEG 2026. Front do MVP de contratação de energia no mercado livre de baixa tensão (abertura em 25/11/2027): envio da fatura, simulação honesta, ciência de riscos, aceite, acompanhamento e console do fornecedor com aprovação. Uma plataforma ETEG.
 
 > **Dados 100% sintéticos.** Nenhum dado real de cliente. Economia é sempre estimativa em faixa, nunca garantia.
 
@@ -22,26 +22,25 @@ Este repositório é **só o front**. A API é um serviço n8n, em desenvolvimen
 - O navegador chama `/api/<caminho>`; o proxy `src/app/api/[...caminho]/route.ts` repassa para `${N8N_BASE_URL}/<caminho>` (com `N8N_TOKEN`, se houver). URL e token ficam só no servidor, e só os caminhos do contrato são repassados.
 - **Contrato**: [`docs/n8n-contrato.md`](docs/n8n-contrato.md). Cliente do front: `src/lib/api.ts`. Tipos: `src/lib/types.ts`.
 - **Sem `N8N_BASE_URL` = modo demonstração**: o proxy responde com dados fixos (`src/lib/demo-api`). Nada é calculado: uma fatura enviada por arquivo simula com os números da fatura de exemplo.
-- A lógica que existia nas rotas (simulador, regras, RAG, guardrails anti-injeção, agente, leitura de fatura por IA) está preservada em [`n8n-referencia/`](n8n-referencia/LEIA-ME.md) só para portar para o n8n. Não é compilada.
+- A lógica que existia nas rotas (simulador, regras, RAG, guardrails anti-injeção, agente, leitura de fatura por IA, cadastro do varejista) está preservada em [`n8n-referencia/`](n8n-referencia/LEIA-ME.md) só para portar para o n8n. Não é compilada.
 
 ## Telas
 
 | Grupo | Rotas |
 | --- | --- |
-| Site do consumidor (mobile first) | `/`, `/fatura`, `/fatura/conferir`, `/fatura/digitar`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]`, `/assistente` |
-| Console do fornecedor | `/console`, `/console/casos/[id]`, `/console/permissoes` |
-| Portal do fornecedor | `/varejista/entrar`, `/varejista/cadastro`, `/varejista/analise` |
+| Site do consumidor (mobile first) | `/`, `/fatura`, `/fatura/conferir`, `/conta`, `/ofertas`, `/ofertas/[id]`, `/ciencia`, `/aceite`, `/caso/[id]` |
+| Console do fornecedor | `/console`, `/console/casos/[id]` (fila e aprovação do ato 1) |
+| Login do fornecedor | `/varejista/entrar` |
 
-O consumidor contrata sem conta e sem códigos de verificação: o caso fica guardado no navegador. Telas sem API (aceite, CCV e CCEE, permissões, credencial, convites) usam estado simulado e mostram a faixa "Demonstração".
+O consumidor contrata sem conta e sem códigos de verificação: o caso fica guardado no navegador. Depois do aceite ele recebe um **link de acompanhamento** (`/caso/<identificador longo>`), que mostra a etapa real do caso (a que o fornecedor altera no console) e se atualiza sozinho; é por esse link que ele volta, de qualquer aparelho. O aceite em si usa estado simulado.
 
-## Usuários de teste (mock)
+## Usuário de teste (mock)
 
-Definidos no código, em `src/lib/auth-mock.ts`, e validados no navegador (as senhas ficam visíveis no JavaScript da página: servem só para a demonstração).
+Definido no código, em `src/lib/auth-mock.ts`, e validado no navegador (a senha fica visível no JavaScript da página: serve só para a demonstração).
 
 | Perfil | E-mail | Senha | Onde entra |
 | --- | --- | --- | --- |
 | Fornecedor | `varejista@gmail.com` | `Teste123` | `/varejista/entrar` → `/console` (as rotas `/console/**` exigem esse login) |
-| Consumidor | `consumidor@gmail.com` | `Teste123` | `/entrar` (opcional: dá para contratar sem entrar) |
 
 ## Estrutura
 

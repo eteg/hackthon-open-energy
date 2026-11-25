@@ -25,7 +25,7 @@ export function TelaSemSimulacao({ passo, semFatura, erro }: { passo: number; se
         <Alert variant={erro ? "destructive" : "warning"}>
           <TriangleAlert />
           <AlertTitle>{erro ? "Não consegui montar a sua conta" : "Ainda não temos a sua fatura"}</AlertTitle>
-          <AlertDescription>{erro ? `${erro} Envie a fatura de novo para refazer a simulação.` : "Envie a fatura (ou digite os dados) para ver a sua conta e as ofertas."}</AlertDescription>
+          <AlertDescription>{erro ? `${erro} Envie a fatura de novo para refazer a simulação.` : "Envie a fatura para ver a sua conta e as ofertas."}</AlertDescription>
         </Alert>
       ) : (
         <>

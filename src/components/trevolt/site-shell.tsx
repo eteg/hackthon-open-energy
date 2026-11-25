@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ContaLink } from "./conta-link";
 import { Logo } from "./logo";
 import { PassoProgress } from "./passo-progress";
 import { cn } from "@/lib/utils";
@@ -22,7 +21,7 @@ export function SiteShell({
   acao?: React.ReactNode;
   passo?: { n: number; total?: number; sufixo?: string };
   lateral?: React.ReactNode;
-  /** Conteúdo à direita do logo (ex.: "Falar com uma pessoa"). */
+  /** Conteúdo opcional à direita do logo. */
   topo?: React.ReactNode;
   className?: string;
 }) {
@@ -33,14 +32,7 @@ export function SiteShell({
           <Link href="/" aria-label="Trevolt, página inicial">
             <Logo />
           </Link>
-          {topo ?? (
-            <div className="flex items-center gap-1">
-              <Link href="/assistente" className="text-[13px] font-semibold text-primary underline underline-offset-4">
-                Falar com uma pessoa
-              </Link>
-              <ContaLink />
-            </div>
-          )}
+          {topo}
         </header>
         {passo && <PassoProgress {...passo} />}
         <main className="flex flex-1 flex-col gap-3 p-4">{children}</main>

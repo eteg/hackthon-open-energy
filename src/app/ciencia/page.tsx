@@ -59,8 +59,8 @@ export default function CienciaPage() {
     setErro(null);
     try {
       const ids = itens.map((i) => i.id);
-      await api.solicitarMigracao(caso.faturaId!, caso.ofertaId!, ids);
-      atualizar({ cienciaIds: ids, compartilhaDados: { fornecedor, prazo }, etapa: "aceite" });
+      const criado = await api.solicitarMigracao(caso.faturaId!, caso.ofertaId!, ids);
+      atualizar({ acompanhamentoId: criado.acompanhamento_id, cienciaIds: ids, compartilhaDados: { fornecedor, prazo }, etapa: "aceite" });
       router.push("/aceite");
     } catch (e) {
       setErro((e as Error).message || "Não deu para registrar a ciência. Tente de novo.");

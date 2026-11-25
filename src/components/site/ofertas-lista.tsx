@@ -11,7 +11,7 @@ import { useCasoDemo } from "@/lib/demo/store";
 import type { ResultadoOferta } from "@/lib/types";
 import { cn, formatarBRL, formatarPct } from "@/lib/utils";
 import { AlertasSimulacao } from "./alertas-simulacao";
-import { AuditarOferta, MemoriaCalculo } from "./memoria-calculo";
+import { MemoriaCalculo } from "./memoria-calculo";
 import { TelaSemSimulacao } from "./tela-sem-simulacao";
 import { useSimulacao } from "./use-simulacao";
 
@@ -109,7 +109,7 @@ export function OfertasLista() {
   if (!sim) return <TelaSemSimulacao passo={4} semFatura={semFatura} erro={erro} />;
 
   return (
-    <SiteShell topo={<span />} passo={{ n: 4 }} acao={<AuditarOferta ofertas={sim.ofertas} />}>
+    <SiteShell topo={<span />} passo={{ n: 4 }}>
       <h1 className="text-[28px] leading-[1.1] font-medium">Ofertas para você</h1>
       <p className="text-[13px] leading-snug text-muted-foreground">Ordenadas pela economia líquida estimada. Ninguém paga por posição.</p>
       <AlertasSimulacao sim={sim} />

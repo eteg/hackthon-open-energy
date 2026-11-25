@@ -61,9 +61,6 @@ export function ReciboOferta({ id }: { id: string }) {
           >
             {o.compensa ? "Quero esta oferta" : "Esta oferta não compensa"}
           </Button>
-          <Button asChild variant="link" className="justify-center text-[13px]">
-            <Link href="/assistente">Tirar uma dúvida com a IA antes</Link>
-          </Button>
         </>
       }
     >

@@ -10,7 +10,7 @@ type Carga = { id: string; sim?: Simulacao; fatura?: Fatura; erro?: string };
 
 /**
  * Simulação REAL (api.simular) da fatura do caso + a própria fatura (para a conta decomposta).
- * A fatura vem do rascunho (enviada/digitada) ou, para as de exemplo, de api.extrairFatura. Se faltar, a tela usa só `parcela_energia_pct`.
+ * A fatura vem do rascunho ou, para as de exemplo, de api.extrairFatura. Se faltar, a tela usa só `parcela_energia_pct`.
  */
 export function useSimulacao() {
   const hidratado = useHidratado();

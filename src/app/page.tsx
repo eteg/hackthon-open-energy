@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { BadgeCheck, Check } from "lucide-react";
 import { QrExemplo } from "@/components/site/qr-exemplo";
-import { ContaLink } from "@/components/trevolt/conta-link";
 import { Logo, Simbolo } from "@/components/trevolt/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,8 +50,6 @@ export default function Home() {
             <a href="#como" className="hover:text-primary">Como funciona</a>
             <a href="#recibo" className="hover:text-primary">Recibo de economia</a>
           </nav>
-          {/* Entrada do login (opcional) do consumidor; vira "Sair" quando há sessão. */}
-          <ContaLink />
         </div>
       </header>
 
@@ -74,16 +71,6 @@ export default function Home() {
               <Pontos itens={PONTOS_DESKTOP} />
             </div>
             <div className="hidden font-display text-xl font-semibold text-primary md:block">Energia do jeito combinado.</div>
-
-            <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-3.5 py-3 md:hidden">
-              <div>
-                <div className="text-sm font-bold">Prefere conversar?</div>
-                <div className="text-xs text-muted-foreground">A Assistente Trevolt é uma IA e responde a qualquer hora.</div>
-              </div>
-              <Link href="/assistente" className="shrink-0 text-[13px] font-semibold text-primary underline underline-offset-4">
-                Falar com ela
-              </Link>
-            </div>
             <p className="mt-auto text-xs leading-snug text-muted-foreground md:hidden">As regras da ANEEL e da CCEE ainda estão em regulamentação. Demonstração com dados sintéticos.</p>
           </div>
 

@@ -13,13 +13,10 @@ const PERMITIDOS: [metodo: string, caminho: RegExp][] = [
   ["POST", /^faturas\/confirmar$/],
   ["POST", /^simulacao$/],
   ["GET", /^regras$/],
-  ["POST", /^agente$/],
   ["GET", /^casos$/],
   ["POST", /^casos$/],
+  ["GET", /^casos\/[\w-]{16,64}$/], // acompanhamento pelo link (identificador longo e aleatório)
   ["POST", /^casos\/[\w-]+\/aprovar$/],
-  ["GET", /^observabilidade$/],
-  ["GET", /^varejista$/],
-  ["PUT", /^varejista$/],
 ];
 const TIMEOUT_MS = 60_000; // leitura de fatura por IA pode demorar
 

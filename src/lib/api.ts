@@ -1,9 +1,8 @@
 /** Cliente HTTP do front (Axios). Toda chamada passa por aqui e vai ao proxy /api, que repassa ao serviço n8n. */
 import axios, { AxiosError } from "axios";
 import type { FaturaParcial } from "./fatura-campos";
-import type { Caso, Etapa, Fatura, ItemCiencia, MensagemChat, RespostaAgente, Simulacao } from "./types";
+import type { Caso, CasoPublico, Etapa, Fatura, ItemCiencia, Simulacao } from "./types";
 
-import type { Varejista, VarejistaEntrada } from "./varejista";
 
 export const http = axios.create({
   baseURL: "/api", // proxy do Next: repassa ao n8n (URL e token só no servidor)
@@ -59,15 +58,6 @@ export type Painel = {
     economia_liquida_mensal_total_rs: number;
   };
 };
-export type Observabilidade = {
-  chamadas: number;
-  latencia_media_ms: number;
-  tokens_entrada: number;
-  tokens_saida: number;
-  custo_total_usd: number | null;
-  taxa_escalonamento: number;
-  injecoes_bloqueadas: number;
-};
 
 export const api = {
   listarFaturas: () => http.get<FaturaResumo[]>("/faturas").then((r) => r.data),
@@ -82,14 +72,11 @@ export const api = {
   confirmarFatura: (fatura: FaturaParcial) => http.post<Fatura>("/faturas/confirmar", { fatura }).then((r) => r.data),
   simular: (faturaId: string) => http.post<Simulacao>("/simulacao", { faturaId }).then((r) => r.data),
   regras: () => http.get<RegrasPublicas>("/regras").then((r) => r.data),
-  perguntarAgente: (mensagens: MensagemChat[], faturaId?: string | null) =>
-    http.post<RespostaAgente>("/agente", { mensagens, faturaId }).then((r) => r.data),
   painel: () => http.get<Painel>("/casos").then((r) => r.data),
+  /** Consulta pública do andamento pelo link (`acompanhamento_id` devolvido ao criar o caso). */
+  acompanharCaso: (acompanhamentoId: string) => http.get<CasoPublico>(`/casos/${acompanhamentoId}`).then((r) => r.data),
   solicitarMigracao: (faturaId: string, ofertaId: string, cienciaIds: string[]) =>
     http.post<Caso>("/casos", { faturaId, ofertaId, cienciaIds }).then((r) => r.data),
   aprovarCaso: (casoId: string, operador: string) =>
     http.post<Caso>(`/casos/${casoId}/aprovar`, { operador }).then((r) => r.data),
-  observabilidade: () => http.get<Observabilidade>("/observabilidade").then((r) => r.data),
-  varejista: () => http.get<{ varejista: Varejista | null }>("/varejista").then((r) => r.data.varejista),
-  salvarVarejista: (dados: VarejistaEntrada) => http.put<Varejista>("/varejista", dados).then((r) => r.data),
 };

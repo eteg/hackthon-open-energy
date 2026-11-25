@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
 import type { Caso } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { DetalheCaso } from "./detalhe";
-import { faseDe, filaDe, nomeCurto, numeroCaso, rotuloAto, useSobreposicoes, type Fila } from "./sim";
+import { ROTULO_ETAPA, filaDe, nomeCurto, numeroCaso, type Fila } from "./sim";
 
 const ABAS: { id: Fila; rotulo: string; vazio: string }[] = [
   { id: "aprovar", rotulo: "Para aprovar", vazio: "Nenhum caso esperando a sua aprovação." },
@@ -26,7 +26,6 @@ export function ConsoleMestre({ id }: { id?: string }) {
   const [casos, setCasos] = useState<Caso[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [abaEscolhida, setAba] = useState<Fila | null>(null);
-  const { mapa } = useSobreposicoes();
 
   const carregar = useCallback(() => {
     api.painel().then((p) => setCasos(p.casos)).catch((e: Error) => setErro(e.message));
@@ -38,10 +37,7 @@ export function ConsoleMestre({ id }: { id?: string }) {
   if (erro) return <p className="p-6 text-sm text-destructive">Não foi possível carregar a fila: {erro}</p>;
   if (!casos) return <div className="p-6"><Skeleton className="h-96 w-full" /></div>;
 
-  const itens = casos.map((c) => {
-    const fase = faseDe(c, mapa[c.id]);
-    return { c, fase, fila: filaDe(fase) };
-  });
+  const itens = casos.map((c) => ({ c, fila: filaDe(c) }));
   const selecionado = id ? itens.find((i) => i.c.id === id) : itens.find((i) => i.fila === "aprovar") ?? itens.find((i) => i.fila === "consumidor");
   const aba: Fila = abaEscolhida ?? (selecionado?.fila === "consumidor" ? "consumidor" : "aprovar");
   const lista = itens.filter((i) => i.fila === aba);
@@ -75,7 +71,7 @@ export function ConsoleMestre({ id }: { id?: string }) {
               <p className="text-muted-foreground">Quando houver, ele aparece aqui.</p>
             </div>
           )}
-          {lista.map(({ c, fase }) => (
+          {lista.map(({ c }) => (
             <Link
               key={c.id}
               href={`/console/casos/${c.id}`}
@@ -90,7 +86,7 @@ export function ConsoleMestre({ id }: { id?: string }) {
                 <b className="text-sm">{numeroCaso(c.id)} · {nomeCurto(c.cliente)}</b>
                 <span className="text-xs text-muted-foreground">{ha(c.criado_em)}</span>
               </span>
-              <span className="text-[13px]">{rotuloAto(fase) ?? c.proxima_acao}</span>
+              <span className="text-[13px]">{ROTULO_ETAPA[c.etapa]}</span>
             </Link>
           ))}
         </aside>
@@ -108,9 +104,7 @@ export function ConsoleMestre({ id }: { id?: string }) {
           )}
         </main>
       </div>
-      <DemoBanner className="mt-6">
-        Fila e aprovação do ato 1 são reais; a API da CCEE é mock e as esperas, devolver e rejeitar mudam só o estado deste navegador.
-      </DemoBanner>
+      <DemoBanner className="mt-6">Dados sintéticos. A aprovação do ato 1 é real; os atos seguintes na CCEE não fazem parte desta demonstração.</DemoBanner>
     </div>
   );
 }
