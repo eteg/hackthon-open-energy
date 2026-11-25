@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 import { useCasoDemo, type CasoDemo } from "@/lib/demo/store";
 
 /** Onde o caso em andamento continua (o login é opcional: sem caso, o consumidor começa pela fatura). */
@@ -36,16 +36,25 @@ export function EntrarConsumidor() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
 
-  function enviar(e: React.FormEvent) {
+  async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    const s = entrar(email, senha);
-    if (!s) {
-      setErro("E-mail ou senha incorretos. Confira e tente de novo.");
-      return;
+    if (enviando) return;
+    setEnviando(true);
+    try {
+      const s = await entrar(email, senha);
+      if (!s) {
+        setErro("E-mail ou senha incorretos. Confira e tente de novo.");
+        return;
+      }
+      // O fornecedor que entra por aqui vai para o console; o consumidor continua o caso.
+      router.push(s.perfil === "varejista" ? "/console" : rotaDoCaso(caso));
+    } catch (falha) {
+      setErro(falha instanceof Error ? falha.message : "Não consegui entrar agora. Tente de novo.");
+    } finally {
+      setEnviando(false);
     }
-    // O fornecedor que entra por aqui vai para o console; o consumidor continua o caso.
-    router.push(s.perfil === "varejista" ? "/console" : rotaDoCaso(caso));
   }
 
   return (
@@ -53,8 +62,8 @@ export function EntrarConsumidor() {
       topo={<span />}
       acao={
         <>
-          <Button size="lg" type="submit" form="form-entrar">
-            Entrar
+          <Button size="lg" type="submit" form="form-entrar" disabled={enviando} aria-busy={enviando}>
+            {enviando ? "Entrando…" : "Entrar"}
           </Button>
           <Link href="/assistente" className="flex min-h-11 items-center justify-center text-[13px] font-semibold text-primary underline underline-offset-4">
             Tirar uma dúvida com a Assistente Trevolt
@@ -84,7 +93,7 @@ export function EntrarConsumidor() {
         </div>
       </form>
       <div className="mt-auto flex flex-col gap-2">
-        <DemoBanner>Login de teste, validado no navegador. Nada é enviado de verdade.</DemoBanner>
+        <DemoBanner>Ambiente de demonstração: use as contas de teste. Os dados são sintéticos.</DemoBanner>
         <p className="text-xs leading-normal text-muted-foreground">
           Ao entrar, você aceita os <span className="font-semibold text-primary underline">Termos de uso</span> e a{" "}
           <span className="font-semibold text-primary underline">Política de privacidade</span>.

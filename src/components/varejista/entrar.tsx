@@ -13,20 +13,21 @@ import { DemoBanner } from "@/components/trevolt/demo-banner";
 import { Campo, CampoTexto } from "@/components/varejista/campo";
 import { CascaVarejista, linkCobre } from "@/components/varejista/casca";
 import { CabecalhoPasso } from "@/components/varejista/marcador";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 
 type Tela = "entrar" | "recuperar";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function EntrarVarejista() {
   const router = useRouter();
-  const { entrar: entrarMock } = useSessao();
+  const { entrar: entrarSupabase } = useSessao();
   const [tela, setTela] = useState<Tela>("entrar");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrar, setMostrar] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [erros, setErros] = useState<Partial<Record<"email" | "senha", string>>>({});
+  const [entrando, setEntrando] = useState(false);
   const titulo = useRef<HTMLHeadingElement>(null);
 
   function ir(t: Tela) {
@@ -43,20 +44,27 @@ export function EntrarVarejista() {
     return false;
   }
 
-  function entrar(e: React.FormEvent) {
+  async function entrar(e: React.FormEvent) {
     e.preventDefault();
-    if (!emailOk()) return;
+    if (entrando || !emailOk()) return;
     if (!senha) {
       setErros({ senha: "Informe a senha" });
       document.getElementById("senha")?.focus();
       return;
     }
-    if (!entrarMock(email, senha, "varejista")) {
-      setErros({ senha: "E-mail ou senha incorretos" });
-      document.getElementById("senha")?.focus();
-      return;
+    setEntrando(true);
+    try {
+      if (!(await entrarSupabase(email, senha, "varejista"))) {
+        setErros({ senha: "E-mail ou senha incorretos" });
+        document.getElementById("senha")?.focus();
+        return;
+      }
+      router.push("/console");
+    } catch (falha) {
+      setErros({ senha: falha instanceof Error ? falha.message : "Não consegui entrar agora. Tente de novo." });
+    } finally {
+      setEntrando(false);
     }
-    router.push("/console");
   }
 
   function recuperar(e: React.FormEvent) {
@@ -90,7 +98,7 @@ export function EntrarVarejista() {
                 </div>
               </Campo>
               <button type="button" onClick={() => ir("recuperar")} className={`${linkCobre} -mt-2 self-start text-xs`}>Esqueci a senha</button>
-              <Button type="submit" className="min-h-12">Entrar</Button>
+              <Button type="submit" className="min-h-12" disabled={entrando} aria-busy={entrando}>{entrando ? "Entrando…" : "Entrar"}</Button>
               <div className="flex items-center gap-2.5 text-xs text-muted-foreground"><Separator className="flex-1" />ou<Separator className="flex-1" /></div>
               <Button type="button" variant="outline" className="min-h-12 bg-card" onClick={() => setErros({ email: "O login único da ETEG não está disponível na demonstração. Entre com e-mail e senha." })}>Equipe ETEG: entrar com SSO</Button>
               <p className="text-center text-sm text-muted-foreground">Ainda não é parceiro? <Link href="/varejista/cadastro" className={linkCobre}>Solicitar cadastro</Link></p>
@@ -113,7 +121,7 @@ export function EntrarVarejista() {
           )}
         </Card>
 
-        <DemoBanner className="max-w-[440px]">Login de teste, validado no navegador; a recuperação de senha é simulada.</DemoBanner>
+        <DemoBanner className="max-w-[440px]">Ambiente de demonstração: use a conta de teste do fornecedor; a recuperação de senha é simulada.</DemoBanner>
       </div>
     </CascaVarejista>
   );

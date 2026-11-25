@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 
 /** Ícone do cabeçalho do site: "Entrar" (sem login) ou "Sair" (logado). Só renderiza depois de saber o estado. */
 export function ContaLink() {
@@ -17,7 +17,7 @@ export function ContaLink() {
     );
   }
   return (
-    <button type="button" onClick={sair} aria-label={`Sair (${sessao.email})`} title={`Sair (${sessao.email})`} className={cls}>
+    <button type="button" onClick={() => void sair()}aria-label={`Sair (${sessao.email})`} title={`Sair (${sessao.email})`} className={cls}>
       <LogOut className="size-5" aria-hidden="true" />
     </button>
   );

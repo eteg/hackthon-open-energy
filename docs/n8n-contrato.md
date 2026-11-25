@@ -5,6 +5,10 @@ O app (Next.js) é só front. Toda a API é um serviço n8n. O navegador chama `
 `Content-Type`, e `Authorization: Bearer ${N8N_TOKEN}` se houver token. Sem `N8N_BASE_URL`, o proxy responde em
 **modo demonstração** (`src/lib/demo-api`, respostas fixas).
 
+Login: quando o Supabase está configurado, o proxy exige sessão de fornecedor (perfil `varejista`) em `GET /casos`,
+`POST /casos/{id}/aprovar` e `GET /observabilidade` e responde 401/403 sem repassar ao n8n. O banco do Supabase
+(`supabase/migrations/`) já tem as tabelas `faturas`, `casos`, `varejista` e `evidencias`, que o n8n pode usar.
+
 Regras que o n8n deve seguir:
 - Responder **JSON**. Em erro, o corpo é `{ "erro": "mensagem legível em pt-BR" }` (a UI mostra esse texto). Erros de campo: `{ "erro": "...", "campos": { "<campo>": ["mensagem"] } }`.
 - Tipos de entrada e saída: `src/lib/types.ts` (zod), `src/lib/varejista.ts` e `src/lib/api.ts`. Os formatos abaixo resumem; o código é a fonte da verdade.

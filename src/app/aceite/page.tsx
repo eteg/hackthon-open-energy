@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSessao } from "@/lib/auth-mock";
+import { useSessao } from "@/lib/sessao";
 import { useCasoDemo } from "@/lib/demo/store";
 
 /** Quem assina pela empresa + aceite comercial, numa tela só. Sem código de verificação. */
