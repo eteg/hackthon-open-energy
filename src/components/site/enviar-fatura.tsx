@@ -121,7 +121,7 @@ export function EnviarFatura() {
   // S2b: imagem que não é uma conta (e demais falhas de leitura)
   if (falha) {
     return (
-      <SiteShell topo={<span />}
+      <SiteShell topo={<span />} voltar={{ href: "/" }}
         passo={{ n: 1 }}
        
         acao={
@@ -180,7 +180,7 @@ export function EnviarFatura() {
 
   // S2: enviar a fatura, com consentimento
   return (
-    <SiteShell topo={<span />}
+    <SiteShell topo={<span />} voltar={{ href: "/" }}
       passo={{ n: 1 }}
      
       acao={

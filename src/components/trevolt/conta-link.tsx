@@ -4,15 +4,16 @@ import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
 import { useSessao } from "@/lib/sessao";
 
-/** Ícone do cabeçalho do site: "Entrar" (sem login) ou "Sair" (logado). Só renderiza depois de saber o estado. */
+/** Botão do cabeçalho do site: "Entrar" com ícone (sem login) ou ícone de "Sair" (logado). Só renderiza depois de saber o estado. */
 export function ContaLink() {
   const { sessao, sair } = useSessao();
   const cls = "flex size-11 items-center justify-center rounded-md text-foreground hover:bg-secondary";
-  if (sessao === undefined) return <span className="size-11" aria-hidden="true" />;
+  if (sessao === undefined) return <span className="h-11 w-[92px]" aria-hidden="true" />;
   if (!sessao) {
     return (
-      <Link href="/entrar" aria-label="Entrar" title="Entrar" className={cls}>
+      <Link href="/entrar" className="flex h-11 items-center gap-2 rounded-md px-3 text-[15px] font-semibold text-foreground hover:bg-secondary">
         <LogIn className="size-5" aria-hidden="true" />
+        Entrar
       </Link>
     );
   }

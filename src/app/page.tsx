@@ -46,14 +46,8 @@ export default function Home() {
         <Link href="/" aria-label="Trevolt, página inicial">
           <Logo className="md:[&_span:last-child]:text-[32px] md:[&>svg]:h-8 md:[&>svg]:w-12" />
         </Link>
-        <div className="flex items-center gap-4 md:gap-6">
-          <nav aria-label="Seções" className="hidden items-center gap-6 text-[15px] font-medium md:flex">
-            <a href="#como" className="hover:text-primary">Como funciona</a>
-            <a href="#recibo" className="hover:text-primary">Recibo de economia</a>
-          </nav>
-          {/* Entrada do login (opcional) do consumidor; vira "Sair" quando há sessão. */}
-          <ContaLink />
-        </div>
+        {/* Entrada do login (opcional) do consumidor; vira "Sair" quando há sessão. */}
+        <ContaLink />
       </header>
 
       <main className="flex flex-1 flex-col">

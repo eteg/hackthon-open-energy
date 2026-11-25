@@ -60,6 +60,7 @@ export function EntrarConsumidor() {
   return (
     <SiteShell
       topo={<span />}
+      voltar={{ href: "/", historico: true }}
       acao={
         <>
           <Button size="lg" type="submit" form="form-entrar" disabled={enviando} aria-busy={enviando}>
