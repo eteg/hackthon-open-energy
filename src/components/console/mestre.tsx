@@ -78,7 +78,7 @@ export function ConsoleMestre({ id }: { id?: string }) {
               aria-current={selecionado?.c.id === c.id ? "true" : undefined}
               className={cn(
                 "flex flex-col gap-0.5 rounded-xl border bg-card p-3 hover:bg-secondary/40",
-                selecionado?.c.id === c.id && "border-2 border-primary",
+                selecionado?.c.id === c.id && "border-2 border-grafite",
                 selecionado?.c.id !== c.id && c.alerta_beneficio && "border-[1.5px] border-warning"
               )}
             >

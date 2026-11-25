@@ -20,7 +20,7 @@ export function SiteShell({
   className,
 }: {
   children: React.ReactNode;
-  /** Barra de ação fixa no rodapé: 1 botão primário (cobre) por tela + link secundário. */
+  /** Barra de ação fixa no rodapé: 1 botão primário por tela + link secundário. */
   acao?: React.ReactNode;
   passo?: { n: number; total?: number; sufixo?: string };
   lateral?: React.ReactNode;
@@ -33,11 +33,11 @@ export function SiteShell({
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[880px] justify-center gap-10 md:py-8">
       <div className={cn("flex min-h-dvh w-full max-w-[480px] flex-col bg-background md:min-h-[720px] md:rounded-[28px] md:border md:shadow-[0_12px_32px_rgba(30,34,41,.12)]", className)}>
-        <header className="flex h-14 flex-none items-center justify-between border-b px-4">
+        <header className="cabecalho-escuro flex h-14 flex-none items-center justify-between px-4 md:rounded-t-[28px]">
           <div className="flex items-center gap-1">
             {voltar && <BotaoVoltar {...voltar} />}
             <Link href={URL_LP} aria-label="Trevolt, página inicial">
-              <Logo />
+              <Logo negativo />
             </Link>
           </div>
           {topo}

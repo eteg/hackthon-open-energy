@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export function Simbolo({ negativo = false, className }: { negativo?: boolean; className?: string }) {
   return (
     <svg viewBox="0 0 48 30" fill="none" aria-hidden="true" className={cn("h-5 w-8", className)}>
-      <path d="M7 22 C 15 2, 33 2, 41 22" stroke={negativo ? "#E9A27C" : "#A84A24"} strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M7 22 C 15 2, 33 2, 41 22" stroke={negativo ? "#E9A27C" : "#8A3B1C"} strokeWidth="3.5" strokeLinecap="round" />
       <circle cx="7" cy="22" r="5" fill={negativo ? "#F6F2EA" : "#1E2229"} />
       <circle cx="41" cy="22" r="5" fill={negativo ? "#F6F2EA" : "#1E2229"} />
     </svg>

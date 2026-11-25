@@ -114,7 +114,7 @@ export default function AceitePage() {
             <Label htmlFor="aceite" className="text-sm leading-snug font-normal">Li e aceito. Sei que posso desistir em até 7 dias.</Label>
           </div>
           <p className="text-xs leading-snug text-muted-foreground">Registramos o documento e o horário do aceite.</p>
-          <div className="rounded-xl border-2 border-primary bg-card p-3.5 text-[13px] leading-[1.45]">
+          <div className="rounded-xl border-2 border-grafite bg-card p-3.5 text-[13px] leading-[1.45]">
             <b>O próximo passo não é aqui.</b> Depois do aceite, você recebe um e-mail da CCEE para assinar o contrato com ela (CCV). Você assina lá.
           </div>
           <DemoBanner>Aceite simulado. Nada é enviado de verdade. CNPJ e unidade vêm da fatura.</DemoBanner>

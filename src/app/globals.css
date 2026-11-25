@@ -31,9 +31,12 @@
   --color-cobre: var(--cobre);
   --color-cobre-escuro: var(--cobre-escuro);
   --color-cobre-claro: var(--cobre-claro);
+  --color-cobre-claro-hover: var(--cobre-claro-hover);
   --color-cobre-tinta: var(--cobre-tinta);
   --color-grafite: var(--grafite);
+  --color-grafite-2: var(--grafite-2);
   --color-grafite-suave: var(--grafite-suave);
+  --color-sobre-escuro: var(--sobre-escuro);
   --color-papel: var(--papel);
   --color-linha: var(--linha);
   --radius-sm: 4px;
@@ -43,23 +46,27 @@
 }
 
 :root {
-  /* Marca (valores exatos de tokens.css do guia) */
-  --cobre: #a84a24;
-  --cobre-escuro: #8a3b1c;
+  /* Marca: as mesmas cores da landing page (trevolt.vercel.app). Botão principal em cobre-claro com texto
+     e borda grafite; cobre (escuro) só para texto de destaque e links; cabeçalhos em grafite. */
+  --cobre: #8a3b1c;
+  --cobre-escuro: #6e2f16;
   --cobre-claro: #e9a27c;
+  --cobre-claro-hover: #e08f65;
   --cobre-tinta: #f3e1d6;
   --grafite: #1e2229;
+  --grafite-2: #2a2f38; /* superfície sobre o grafite */
   --grafite-suave: #5b6470;
+  --sobre-escuro: #c9cdd3; /* texto secundário sobre o grafite */
   --papel: #f6f2ea;
   --branco: #ffffff;
   --linha: #dcd5c8;
-  --confirmado: #1f7a4d;
-  --confirmado-tinta: #e7f1eb;
-  --atencao: #8a5a00;
-  --atencao-tinta: #f5e8cc;
+  --confirmado: #1d6b34;
+  --confirmado-tinta: #d6efd9;
+  --atencao: #8a3b1c; /* avisos no tom de destaque da LP, que não usa amarelo */
+  --atencao-tinta: #f3e1d6;
   --erro: #b42318;
-  --campo: #d9cfbb; /* borda de campos e botões secundários */
-  --secundario: #efe9dc; /* superfície secundária sobre o papel */
+  --campo: #cfc7b8; /* borda de campos */
+  --secundario: #efe9de; /* superfície secundária sobre o papel */
 
   /* Semântica do shadcn */
   --radius: 12px;
@@ -80,7 +87,7 @@
   --destructive: var(--erro);
   --border: var(--linha);
   --input: var(--campo);
-  --ring: var(--cobre);
+  --ring: var(--grafite);
 }
 
 @layer base {
@@ -98,8 +105,20 @@
     @apply font-display font-medium tracking-normal;
   }
   :focus-visible {
-    outline: 2px solid var(--cobre);
+    outline: 2px solid var(--grafite);
     outline-offset: 2px;
+  }
+}
+
+/* Cabeçalho escuro, como o da LP: fundo grafite, texto claro e foco em cobre-claro (o grafite sumiria). */
+@layer components {
+  .cabecalho-escuro {
+    background: var(--grafite);
+    color: var(--branco);
+    border-color: var(--grafite);
+  }
+  .cabecalho-escuro :focus-visible {
+    outline-color: var(--cobre-claro);
   }
 }
 

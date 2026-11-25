@@ -59,7 +59,7 @@ export function EntrarVarejista() {
           <p className="mt-2.5 font-display text-lg font-semibold text-cobre">Energia do jeito combinado.</p>
         </div>
 
-        <Card className="w-full max-w-[440px] gap-4 rounded-xl border-2 border-primary p-7 shadow-none">
+        <Card className="w-full max-w-[440px] gap-4 rounded-xl border-2 border-grafite p-7 shadow-none">
           <form noValidate onSubmit={entrar} className="flex flex-col gap-4">
             <div className="space-y-1">
               <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Entrar</p>

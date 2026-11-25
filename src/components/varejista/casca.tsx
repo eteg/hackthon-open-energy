@@ -21,15 +21,15 @@ export function CascaVarejista({
 }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-4 py-3 md:px-6">
+      <header className="cabecalho-escuro flex flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6">
         <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
           <Link href={URL_LP_FORNECEDORES} aria-label="Trevolt para fornecedores, página inicial" className="inline-flex items-center gap-2">
-            <Logo />
-            <span className="text-sm font-medium text-muted-foreground">para fornecedores</span>
+            <Logo negativo />
+            <span className="text-sm font-medium text-sobre-escuro">para fornecedores</span>
           </Link>
-          <Badge variant="outline">{area}</Badge>
+          <Badge variant="outline" className="border-white/30 bg-transparent text-white">{area}</Badge>
         </div>
-        <div className="text-sm text-muted-foreground">{direita}</div>
+        <div className="text-sm text-sobre-escuro [&_a]:text-cobre-claro">{direita}</div>
       </header>
       {barra}
       <main className={cn("mx-auto w-full flex-1 px-4 py-8 md:px-6", largura)}>{children}</main>
