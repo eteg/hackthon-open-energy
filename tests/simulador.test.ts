@@ -3,7 +3,7 @@ import { buscarFatura, ofertas } from "@/lib/dados";
 import { carregarRegras } from "@/lib/regras";
 import { simular, subtrairDias } from "@/lib/simulador";
 import { detectarInjecao } from "@/lib/guardrails";
-import { buscar } from "@/lib/rag";
+import { buscar, carregarChunks } from "@/lib/rag";
 
 const regras = carregarRegras();
 const sim = (id: string) => simular(buscarFatura(id)!, ofertas, regras);
@@ -71,5 +71,31 @@ describe("RAG da FAQ", () => {
   });
   it("acha a resposta sobre falta de luz", () => {
     expect(buscar("se faltar luz quem conserta a rede?")[0].pergunta).toMatch(/rede/);
+  });
+
+  // O agente só responde sozinho com score ≥ limiar / 1,6 (confiança = score × 1,6 em src/lib/agente.ts).
+  const scoreMinimo = carregarRegras().premissas_produto.limiar_confianca_agente / 1.6;
+
+  it("'quando posso migrar' acha quem pode migrar, com confiança para responder", () => {
+    const [top] = buscar("Quando posso migrar para o mercado livre?");
+    expect(top.pergunta).toBe("Quem pode migrar e quando?");
+    expect(top.score).toBeGreaterThanOrEqual(scoreMinimo);
+  });
+
+  it("usa as variações da FAQ para perguntas com outras palavras", () => {
+    expect(buscar("Minha conta aumentou, por quê?")[0].pergunta).toMatch(/mais cara/);
+    expect(buscar("Qual o papel da CCEE?")[0].pergunta).toMatch(/Quem é quem/);
+    expect(buscar("Se o fornecedor falir fico sem luz?")[0].pergunta).toMatch(/falir/);
+  });
+
+  it("variações ajudam a busca mas não vazam para a resposta nem para a fonte", () => {
+    const chunks = carregarChunks();
+    expect(chunks.every((c) => c.variacoes.length > 0)).toBe(true);
+    expect(chunks.some((c) => /Variações/.test(c.resposta + c.fonte))).toBe(false);
+  });
+
+  it("pergunta fora do escopo continua abaixo do limiar (escala para humano)", () => {
+    const [top] = buscar("Qual o horário de funcionamento da loja?");
+    expect(top?.score ?? 0).toBeLessThan(scoreMinimo);
   });
 });
