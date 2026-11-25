@@ -89,12 +89,12 @@ function Oferta({ o, posicao, destaque, onEscolher }: { o: ResultadoOferta; posi
             Escolher esta oferta
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/ofertas/${o.oferta_id}`}>Ver recibo</Link>
+            <Link href={`/ofertas/${o.oferta_id}`}>Ver detalhes</Link>
           </Button>
         </div>
       ) : (
         <Link href={`/ofertas/${o.oferta_id}`} className="mt-1 inline-flex min-h-11 items-center text-[13px] font-semibold text-primary underline">
-          Ver recibo
+          Ver detalhes
         </Link>
       )}
     </div>
