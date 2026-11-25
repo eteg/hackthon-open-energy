@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Activity, CircleCheck, Clock, ShieldAlert, TriangleAlert, Wallet } from "lucide-react";
+import Link from "next/link";
+import { Activity, Building2, CircleCheck, Clock, ShieldAlert, TriangleAlert, Wallet } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { api, type Observabilidade, type Painel } from "@/lib/api";
 import { formatarBRL, formatarData } from "@/lib/utils";
 import type { Caso, Etapa } from "@/lib/types";
+import { formatarCnpj, type Varejista } from "@/lib/varejista";
 
 const ROTULO_ETAPA: Record<Etapa, string> = {
   simulado: "Simulado",
@@ -67,9 +70,12 @@ export default function PainelPage() {
   const [operador, setOperador] = useState("Operador Demo");
   const [filtro, setFiltro] = useState<Etapa | "todos" | "risco">("todos");
 
+  const [varejista, setVarejista] = useState<Varejista | null | undefined>(undefined);
+
   const carregar = useCallback(() => {
     api.painel().then(setPainel);
     api.observabilidade().then(setObs);
+    api.varejista().then(setVarejista).catch(() => setVarejista(null));
   }, []);
   useEffect(() => {
     carregar();
@@ -94,15 +100,39 @@ export default function PainelPage() {
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+        <div className="space-y-1">
           <h1 className="text-2xl font-bold">Painel do varejista</h1>
           <p className="text-muted-foreground">Casos de migração, clientes em risco e saúde da IA.</p>
+          {varejista && (
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+              <Building2 className="size-4 text-primary" />
+              <span className="font-medium">{varejista.nome_fantasia}</span>
+              <span className="text-muted-foreground">CNPJ {formatarCnpj(varejista.cnpj)}</span>
+              {varejista.situacao_ccee === "em_habilitacao" && <Badge variant="warning">habilitação CCEE em andamento</Badge>}
+              <Link href="/painel/empresa" className="text-primary underline-offset-4 hover:underline">
+                Dados da empresa
+              </Link>
+            </p>
+          )}
         </div>
         <label className="flex items-center gap-2 text-sm">
           Operador
           <Input value={operador} onChange={(e) => setOperador(e.target.value)} className="w-44" />
         </label>
       </header>
+
+      {varejista === null && (
+        <Alert variant="warning">
+          <Building2 />
+          <AlertTitle>Cadastre sua empresa</AlertTitle>
+          <AlertDescription>
+            <p>Sem cadastro, o assistente virtual se apresenta com um nome genérico. Leva poucos minutos.</p>
+            <Button asChild size="sm" className="mt-2">
+              <Link href="/painel/empresa">Cadastrar empresa</Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {erro && <p className="text-sm text-destructive">Não foi possível aprovar: {erro}</p>}
 

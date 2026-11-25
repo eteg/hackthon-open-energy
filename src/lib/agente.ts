@@ -13,7 +13,7 @@ import { detectarInjecao, pedeHumano, temaSensivel } from "./guardrails";
 import { carregarRegras } from "./regras";
 import { buscarFatura, ofertas } from "./dados";
 import { simular } from "./simulador";
-import { registrarEvidencia, registrarObservabilidade } from "./store";
+import { nomeVarejista, registrarEvidencia, registrarObservabilidade } from "./store";
 import { AgenteSaidaSchema, type AgenteSaida, type Fatura, type MensagemChat, type Simulacao } from "./types";
 
 const MODELO = process.env.ANTHROPIC_MODEL ?? "claude-haiku-5-5";
@@ -100,7 +100,7 @@ async function respostaLLM(mensagens: MensagemChat[], hits: Hit[], sim: Simulaca
   const regras = carregarRegras();
   const template = readFileSync(path.join(process.cwd(), "prompts", "agente-sistema.md"), "utf8");
   const system = template
-    .replaceAll("{{nome_varejista}}", regras.nome_varejista)
+    .replaceAll("{{nome_varejista}}", nomeVarejista(regras.nome_varejista))
     .replaceAll("{{beneficios_nao_aplicaveis}}", Object.values(regras.beneficios_nao_aplicaveis).join(", "))
     .replaceAll("{{antecedencia_dias}}", String(regras.antecedencia_migracao_dias))
     .replaceAll("{{retorno_acr_meses}}", String(regras.retorno_acr_aviso_meses))

@@ -2,6 +2,7 @@
 import axios, { AxiosError } from "axios";
 import type { Caso, Etapa, Fatura, ItemCiencia, MensagemChat, Simulacao } from "./types";
 import type { RespostaAgente } from "./agente";
+import type { Varejista, VarejistaEntrada } from "./varejista";
 
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api",
@@ -9,12 +10,22 @@ export const http = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Normaliza erros: a UI sempre recebe Error com mensagem legível em português.
+/** Erro de API com mensagem legível e, quando a validação falha, os erros de cada campo. */
+export class ErroApi extends Error {
+  constructor(
+    mensagem: string,
+    public campos: Record<string, string[] | undefined> = {}
+  ) {
+    super(mensagem);
+  }
+}
+
+// Normaliza erros: a UI sempre recebe ErroApi com mensagem legível em português.
 http.interceptors.response.use(
   (r) => r,
-  (e: AxiosError<{ erro?: string }>) => {
+  (e: AxiosError<{ erro?: string; campos?: Record<string, string[] | undefined> }>) => {
     const msg = e.response?.data?.erro ?? (e.code === "ECONNABORTED" ? "Tempo esgotado. Tente de novo." : e.message);
-    return Promise.reject(new Error(msg));
+    return Promise.reject(new ErroApi(msg, e.response?.data?.campos));
   }
 );
 
@@ -61,4 +72,6 @@ export const api = {
   aprovarCaso: (casoId: string, operador: string) =>
     http.post<Caso>(`/casos/${casoId}/aprovar`, { operador }).then((r) => r.data),
   observabilidade: () => http.get<Observabilidade>("/observabilidade").then((r) => r.data),
+  varejista: () => http.get<{ varejista: Varejista | null }>("/varejista").then((r) => r.data.varejista),
+  salvarVarejista: (dados: VarejistaEntrada) => http.put<Varejista>("/varejista", dados).then((r) => r.data),
 };

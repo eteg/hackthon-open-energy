@@ -34,6 +34,15 @@ export default function AtendimentoPage() {
 
   useEffect(() => {
     api.listarFaturas().then(setFaturas).catch(() => {});
+    // Com a empresa cadastrada, o assistente se apresenta pelo nome fantasia (só troca antes da 1ª pergunta).
+    api
+      .varejista()
+      .then((v) => {
+        if (!v) return;
+        const texto = `Olá! Sou o assistente virtual (uma IA) de ${v.nome_fantasia}. Posso explicar sua conta, a simulação e os passos da migração. Se preferir, chamo uma pessoa.`;
+        setItens((atual) => (atual.length === 1 ? [{ papel: "agente", texto }] : atual));
+      })
+      .catch(() => {});
   }, []);
   useEffect(() => {
     fim.current?.scrollIntoView({ behavior: "smooth" }); // (retorna Promise em browsers novos: não devolver)

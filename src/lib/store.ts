@@ -6,10 +6,18 @@ import { appendFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { casosIniciais } from "./dados";
 import type { Caso } from "./types";
+import type { Varejista } from "./varejista";
 
 export type Evidencia = {
   em: string;
-  tipo: "simulacao" | "extracao" | "ciencia" | "aprovacao_humana" | "injecao_bloqueada" | "escalonamento";
+  tipo:
+    | "simulacao"
+    | "extracao"
+    | "ciencia"
+    | "aprovacao_humana"
+    | "injecao_bloqueada"
+    | "escalonamento"
+    | "cadastro_varejista";
   ref: string;
   dados: Record<string, unknown>;
 };
@@ -27,14 +35,24 @@ export type RegistroObservabilidade = {
   alerta_injecao: boolean;
 };
 
-type Store = { casos: Caso[]; evidencias: Evidencia[]; observabilidade: RegistroObservabilidade[] };
+type Store = {
+  casos: Caso[];
+  evidencias: Evidencia[];
+  observabilidade: RegistroObservabilidade[];
+  /** Empresa que opera o Copiloto (uma por instalação). Opcional: um store criado antes do hot reload não tem a chave. */
+  varejista?: Varejista | null;
+};
 
 const g = globalThis as unknown as { __etegStore?: Store };
 export const store: Store = (g.__etegStore ??= {
   casos: structuredClone(casosIniciais),
   evidencias: [],
   observabilidade: [],
+  varejista: null,
 });
+
+/** Nome que o cliente vê: o nome fantasia cadastrado ou, sem cadastro, o das regras. */
+export const nomeVarejista = (padrao: string) => store.varejista?.nome_fantasia ?? padrao;
 
 function anexarJsonl(arquivo: string, linha: unknown) {
   try {

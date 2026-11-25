@@ -23,6 +23,7 @@ Para novos componentes shadcn: `npx shadcn@latest add dialog` (o `components.jso
 | `/onboarding` | Fatura → dados extraídos → simulação honesta com recibo → ciência de riscos → pedido de migração |
 | `/atendimento` | Agente com RAG + fonte, escalonamento para humano e bloqueio de prompt injection |
 | `/painel` | Casos por etapa, risco de desistência, **aprovação humana** da migração, observabilidade da IA |
+| `/painel/empresa` | Cadastro da comercializadora: CNPJ (numérico ou alfanumérico), habilitação na CCEE, estados de atuação, sede, canais de atendimento, responsável e encarregado de dados (LGPD), com declaração registrada por hash. O nome fantasia passa a ser usado pelo assistente |
 
 ## Regra de ouro (testada)
 
@@ -38,9 +39,10 @@ prompts/agente-sistema.md   System prompt do agente ({{variáveis}} preenchidas 
 src/lib/simulador.ts        Cálculo determinístico + recibo auditável (hash do input + versão das regras)
 src/lib/guardrails.ts       Anti-injection (camada 1) e gatilhos de escalonamento
 src/lib/agente.ts           Agente: modo LLM (Anthropic) ou offline (RAG + templates)
-src/lib/store.ts            Estado em memória + evidências e observabilidade em logs/*.jsonl
+src/lib/store.ts            Estado em memória (casos e cadastro do varejista) + evidências e observabilidade em logs/*.jsonl
+src/lib/varejista.ts        Schema do cadastro do varejista (zod, usado no formulário e na API), CNPJ e máscaras
 src/lib/api.ts              Cliente Axios usado por todas as telas
-src/app/api/*               Rotas: faturas, faturas/extrair, simulacao, regras, agente, casos, casos/[id]/aprovar, observabilidade
+src/app/api/*               Rotas: faturas, faturas/extrair, simulacao, regras, agente, casos, casos/[id]/aprovar, observabilidade, varejista
 ```
 
 ## Casos de borda da base sintética
