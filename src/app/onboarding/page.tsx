@@ -206,7 +206,12 @@ export default function OnboardingPage() {
                 onChange={setCiencia}
                 destaque={extracao?.fatura.beneficios.length ? ["perda_beneficios"] : []}
               />
-              <Button onClick={solicitar} disabled={!cienciaCompleta || carregando} size="lg">
+              <Button
+                onClick={solicitar}
+                disabled={!cienciaCompleta || carregando}
+                size="lg"
+                className="h-auto min-h-10 w-full py-2 whitespace-normal sm:w-auto"
+              >
                 {carregando && <LoaderCircle className="animate-spin" />}
                 Pedir migração (vai para aprovação de um operador)
               </Button>

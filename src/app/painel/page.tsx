@@ -40,6 +40,27 @@ function Kpi({ icon: Icon, rotulo, valor }: { icon: React.ElementType; rotulo: s
   );
 }
 
+function AcaoCaso({ caso, operador, onAprovar }: { caso: Caso; operador: string; onAprovar: (id: string) => void }) {
+  if (caso.etapa === "aguardando_aprovacao") {
+    return (
+      <Button size="sm" onClick={() => onAprovar(caso.id)} disabled={operador.trim().length < 2}>
+        <CircleCheck /> Aprovar
+      </Button>
+    );
+  }
+  if (caso.aprovado_por) return <span className="text-xs text-muted-foreground">aprovado por {caso.aprovado_por.operador}</span>;
+  return null;
+}
+
+function BadgesCaso({ caso }: { caso: Caso }) {
+  return (
+    <>
+      <Badge variant="outline">{ROTULO_ETAPA[caso.etapa]}</Badge>
+      {caso.alerta_beneficio && <Badge variant="warning">benefício</Badge>}
+    </>
+  );
+}
+
 export default function PainelPage() {
   const [painel, setPainel] = useState<Painel | null>(null);
   const [obs, setObs] = useState<Observabilidade | null>(null);
@@ -102,7 +123,37 @@ export default function PainelPage() {
       </div>
 
       <Card className="py-0">
-        <Table>
+        {/* Celular e tablet: um cartão por caso, com a ação de aprovar sempre visível (a tabela exigiria rolar para o lado). */}
+        <ul className="divide-y lg:hidden">
+          {casos.map((c) => (
+            <li key={c.id} className="space-y-2 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium">{c.cliente}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {c.segmento} · {c.uf} · desde {formatarData(c.criado_em)}
+                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <div className="font-medium tabular-nums">{formatarBRL(c.economia_liquida_mensal_rs)}</div>
+                  <div className="text-xs text-muted-foreground">por mês</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-1">
+                <BadgesCaso caso={c} />
+                <Badge variant={corRisco[c.risco_desistencia]}>risco {c.risco_desistencia}</Badge>
+              </div>
+              {c.motivo_risco && <p className="text-xs text-muted-foreground">{c.motivo_risco}</p>}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs">
+                  <span className="text-muted-foreground">Próxima ação:</span> {c.proxima_acao}
+                </p>
+                <AcaoCaso caso={c} operador={operador} onAprovar={aprovar} />
+              </div>
+            </li>
+          ))}
+        </ul>
+        <Table className="hidden lg:table">
           <TableHeader>
             <TableRow>
               <TableHead className="pl-4">Cliente</TableHead>
@@ -123,27 +174,18 @@ export default function PainelPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{ROTULO_ETAPA[c.etapa]}</Badge>
-                  {c.alerta_beneficio && (
-                    <Badge variant="warning" className="ml-1">
-                      benefício
-                    </Badge>
-                  )}
+                  <div className="flex flex-wrap gap-1">
+                    <BadgesCaso caso={c} />
+                  </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-w-48 whitespace-normal">
                   <Badge variant={corRisco[c.risco_desistencia]}>{c.risco_desistencia}</Badge>
                   {c.motivo_risco && <div className="mt-1 text-xs text-muted-foreground">{c.motivo_risco}</div>}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">{formatarBRL(c.economia_liquida_mensal_rs)}</TableCell>
-                <TableCell className="max-w-64 text-xs whitespace-normal">{c.proxima_acao}</TableCell>
+                <TableCell className="max-w-56 text-xs whitespace-normal">{c.proxima_acao}</TableCell>
                 <TableCell className="pr-4 text-right">
-                  {c.etapa === "aguardando_aprovacao" ? (
-                    <Button size="sm" onClick={() => aprovar(c.id)} disabled={operador.trim().length < 2}>
-                      <CircleCheck /> Aprovar
-                    </Button>
-                  ) : c.aprovado_por ? (
-                    <span className="text-xs text-muted-foreground">aprovado por {c.aprovado_por.operador}</span>
-                  ) : null}
+                  <AcaoCaso caso={c} operador={operador} onAprovar={aprovar} />
                 </TableCell>
               </TableRow>
             ))}

@@ -12,7 +12,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}>
+    // bg-background no <html>: o body usa bg-muted/30 (translúcido) e, sem fundo opaco embaixo,
+    // navegadores em modo escuro mostravam cinza-escuro atrás do conteúdo claro.
+    <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable} h-full bg-background antialiased`}>
       <body className="min-h-full flex flex-col bg-muted/30">
         <Header />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
